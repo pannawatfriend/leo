@@ -1,0 +1,217 @@
+.page {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --ink: #201d17;
+  --ink-soft: #625b4e;
+  --ink-faint: #948c7c;
+  --border: #e4ded0;
+  --border-strong: #d0c8b6;
+  --blue: #2f6fe0;
+  --blue-ink: #1b49a6;
+  --blue-wash: #e7f0ff;
+  --amber: #eaa80f;
+  --amber-ink: #8a6205;
+  --amber-wash: #fbefd3;
+  --shadow: 0 1px 2px rgba(40, 32, 16, 0.05), 0 12px 30px rgba(40, 32, 16, 0.08);
+
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "IBM Plex Sans Thai", "IBM Plex Sans", system-ui, sans-serif;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(2rem, 7vw, 5rem) clamp(1rem, 4vw, 2rem) 3rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --bg: #14161c;
+    --surface: #1b1e26;
+    --ink: #efece3;
+    --ink-soft: #a9a294;
+    --ink-faint: #7c7669;
+    --border: #2f333f;
+    --border-strong: #404655;
+    --blue: #6e9bf2;
+    --blue-ink: #b4ccfa;
+    --blue-wash: #182238;
+    --amber: #edbb4a;
+    --amber-ink: #f3d28a;
+    --amber-wash: #2a2212;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 34px rgba(0, 0, 0, 0.42);
+  }
+}
+
+.inner {
+  width: 100%;
+  max-width: 860px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Baloo Thai 2", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-ink);
+  background: var(--blue-wash);
+  border: 1px solid color-mix(in srgb, var(--blue) 25%, transparent);
+  padding: 0.35rem 0.85rem;
+  border-radius: 100px;
+}
+
+.block {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--blue);
+  transform: rotate(-8deg);
+}
+
+.title {
+  font-family: "Baloo Thai 2", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.1rem, 6.5vw, 3.4rem);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 1.1rem 0 0.5rem;
+  text-wrap: balance;
+}
+
+.sub {
+  font-size: clamp(1rem, 2.6vw, 1.18rem);
+  color: var(--ink-soft);
+  max-width: 48ch;
+  margin: 0;
+}
+
+.facts {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.7rem;
+  padding: 0;
+  margin: 2rem 0 0;
+}
+
+.facts li {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  box-shadow: var(--shadow);
+}
+
+.facts b {
+  font-family: "Baloo Thai 2", system-ui, sans-serif;
+  font-size: 1.1rem;
+  display: block;
+}
+
+.facts span {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.1rem;
+  margin: 2.4rem 0 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem 1.4rem 1.5rem;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+}
+
+.card:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}
+
+.cardTag {
+  align-self: flex-start;
+  font-family: "Baloo Thai 2", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.6rem;
+  border-radius: 100px;
+}
+
+.cardTag.teacher {
+  color: var(--blue-ink);
+  background: var(--blue-wash);
+}
+
+.cardTag.student {
+  color: var(--amber-ink);
+  background: var(--amber-wash);
+}
+
+.card h2 {
+  font-family: "Baloo Thai 2", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  margin: 0.2rem 0 0;
+}
+
+.card p {
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.card .go {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--blue-ink);
+}
+
+.foot {
+  margin: 3rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--border);
+  padding-top: 1.4rem;
+}
+
+.foot a {
+  color: var(--blue-ink);
+}
+
+.foot p {
+  margin: 0 0 0.4rem;
+  max-width: 62ch;
+}

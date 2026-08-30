@@ -1,0 +1,1243 @@
+<style>
+  :root{
+    --bg:#F6F7F9; --surface:#FFFFFF; --surface-2:#EDF0F5; --surface-3:#E3E8F0;
+    --ink:#19202E; --ink-soft:#59647A; --ink-faint:#8A93A6;
+    --border:#DCE1EA; --border-strong:#C4CCD9;
+    --brand:#2E6BE6; --brand-ink:#1B4FB0; --brand-wash:#E8F0FE;
+    --accent:#EC9A2E; --accent-ink:#8A5610; --accent-wash:#FBF0DE;
+    --code:#1C9C61; --code-ink:#12703F; --code-wash:#E4F5EC;
+    --danger:#DD4237; --danger-ink:#9E2A22; --danger-wash:#FBE6E4;
+    --shadow:0 1px 2px rgba(20,28,46,.06),0 8px 24px rgba(20,28,46,.06);
+    --radius:14px;
+    --font-display:"Baloo Thai 2","Baloo 2",system-ui,sans-serif;
+    --font-body:"IBM Plex Sans Thai","IBM Plex Sans",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --measure:68ch;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#10141F; --surface:#161C29; --surface-2:#1D2434; --surface-3:#26304380;
+      --ink:#ECEFF5; --ink-soft:#9BA5B9; --ink-faint:#6C7689;
+      --border:#2A3346; --border-strong:#3A4763;
+      --brand:#5F94F6; --brand-ink:#AEC8FB; --brand-wash:#182338;
+      --accent:#F1B45C; --accent-ink:#F6CE93; --accent-wash:#2C2417;
+      --code:#45C98B; --code-ink:#8FE4BF; --code-wash:#15271F;
+      --danger:#F2756C; --danger-ink:#F7A49D; --danger-wash:#2C1A18;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10141F; --surface:#161C29; --surface-2:#1D2434; --surface-3:#26304380;
+    --ink:#ECEFF5; --ink-soft:#9BA5B9; --ink-faint:#6C7689;
+    --border:#2A3346; --border-strong:#3A4763;
+    --brand:#5F94F6; --brand-ink:#AEC8FB; --brand-wash:#182338;
+    --accent:#F1B45C; --accent-ink:#F6CE93; --accent-wash:#2C2417;
+    --code:#45C98B; --code-ink:#8FE4BF; --code-wash:#15271F;
+    --danger:#F2756C; --danger-ink:#F7A49D; --danger-wash:#2C1A18;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:1.5rem}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font-body);font-size:16px;line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;line-height:1.2;text-wrap:balance;margin:0}
+  p{margin:0 0 .9em}
+  a{color:var(--brand-ink);text-decoration-color:color-mix(in srgb,var(--brand) 40%,transparent);text-underline-offset:3px}
+  a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
+    outline:2.5px solid var(--brand);outline-offset:2px;border-radius:4px
+  }
+  code,kbd{font-family:var(--font-mono);font-size:.86em}
+  :not(pre)>code{
+    background:var(--surface-2);border:1px solid var(--border);
+    padding:.08em .4em;border-radius:6px;color:var(--ink);white-space:nowrap
+  }
+  kbd{
+    background:var(--surface);border:1px solid var(--border-strong);
+    border-bottom-width:2px;padding:.05em .45em;border-radius:6px
+  }
+
+  /* ---------- shell ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
+  .layout{display:block}
+  @media (min-width:1080px){
+    .layout{display:grid;grid-template-columns:236px minmax(0,1fr);gap:3.5rem;align-items:start}
+  }
+  main{min-width:0;max-width:var(--measure);padding-bottom:6rem}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{
+    position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--border)
+  }
+  .toolbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:.6rem;padding-bottom:.6rem}
+  .brandmark{display:flex;align-items:center;gap:.6rem;font-family:var(--font-display);font-weight:700;font-size:.98rem}
+  .brandmark .chip{
+    display:grid;place-items:center;width:26px;height:26px;border-radius:7px;
+    background:var(--brand);color:#fff;font-size:.9rem;transform:rotate(-6deg)
+  }
+  .tbtns{display:flex;gap:.5rem}
+  .tbtn{
+    font-family:var(--font-body);font-size:.82rem;font-weight:600;color:var(--ink-soft);
+    background:var(--surface);border:1px solid var(--border);border-radius:9px;
+    padding:.4rem .7rem;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem
+  }
+  .tbtn:hover{color:var(--ink);border-color:var(--border-strong)}
+
+  /* ---------- toc ---------- */
+  .toc{display:none}
+  @media (min-width:1080px){
+    .toc{
+      display:block;position:sticky;top:4rem;align-self:start;
+      font-size:.83rem;line-height:1.5;max-height:calc(100vh - 6rem);overflow-y:auto;
+      padding-right:.5rem
+    }
+  }
+  .toc .toc-h{font-family:var(--font-display);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:1.3rem 0 .5rem}
+  .toc a{
+    display:block;padding:.28rem .6rem;color:var(--ink-soft);text-decoration:none;
+    border-left:2px solid var(--border);border-radius:0 6px 6px 0
+  }
+  .toc a:hover{color:var(--ink);background:var(--surface-2)}
+  .toc a.active{color:var(--brand-ink);border-left-color:var(--brand);background:var(--brand-wash);font-weight:600}
+
+  /* ---------- hero ---------- */
+  .hero{padding:3rem 0 1rem}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--brand-ink);
+    background:var(--brand-wash);border:1px solid color-mix(in srgb,var(--brand) 25%,transparent);
+    padding:.3rem .7rem;border-radius:100px
+  }
+  .hero h1{font-size:clamp(2.1rem,6vw,3.3rem);font-weight:800;margin:1rem 0 .4rem;letter-spacing:-.01em}
+  .hero .sub{font-size:clamp(1rem,2.6vw,1.2rem);color:var(--ink-soft);max-width:52ch}
+  .facts{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin:2rem 0 0;
+    padding:0;list-style:none
+  }
+  .facts li{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;box-shadow:var(--shadow)}
+  .facts b{font-family:var(--font-display);font-size:1.15rem;display:block;color:var(--ink)}
+  .facts span{font-size:.82rem;color:var(--ink-faint)}
+
+  /* ---------- generic sections ---------- */
+  section{scroll-margin-top:4.5rem}
+  .block{margin:3.2rem 0}
+  .kicker{
+    font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:.5rem
+  }
+  h2.big{font-size:clamp(1.5rem,4vw,2rem);font-weight:800;letter-spacing:-.01em;margin-bottom:.3rem}
+  h3{font-size:1.18rem;margin:1.8rem 0 .5rem}
+  h4{font-size:1rem;margin:1.2rem 0 .3rem}
+  .lead{font-size:1.05rem;color:var(--ink-soft)}
+  hr{border:0;border-top:1px solid var(--border);margin:2.5rem 0}
+
+  ul,ol{margin:0 0 1em;padding-left:1.3em}
+  li{margin:.3em 0}
+  li::marker{color:var(--ink-faint)}
+
+  .callout{
+    border:1px solid var(--border);border-left:4px solid var(--brand);
+    background:var(--surface);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin:1.4rem 0
+  }
+  .callout.warn{border-left-color:var(--danger)}
+  .callout.tip{border-left-color:var(--code)}
+  .callout p:last-child{margin-bottom:0}
+  .callout .clabel{font-family:var(--font-display);font-weight:700;font-size:.92rem;display:block;margin-bottom:.2rem}
+
+  table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1.2rem 0}
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:12px}
+  .tscroll table{margin:0}
+  th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);vertical-align:top}
+  thead th{background:var(--surface-2);font-family:var(--font-display);font-weight:600;font-size:.82rem;letter-spacing:.03em;color:var(--ink-soft)}
+  tbody tr:last-child td{border-bottom:0}
+  td.th-term{font-weight:600;white-space:nowrap}
+
+  /* ---------- lesson ---------- */
+  .lesson{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:1.6rem clamp(1.1rem,3vw,2rem);margin:1.6rem 0
+  }
+  .lesson-head{display:flex;gap:1rem;align-items:flex-start;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1.1rem}
+  .lesson-num{
+    flex:none;width:44px;height:44px;border-radius:11px;background:var(--brand);color:#fff;
+    font-family:var(--font-display);font-weight:800;font-size:1.3rem;display:grid;place-items:center;
+    transform:rotate(-5deg)
+  }
+  .lesson-head h3{margin:.1rem 0 .15rem;font-size:1.22rem}
+  .lesson-head .en{color:var(--ink-faint);font-size:.86rem;font-weight:500}
+  .meta-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+  .tag{
+    font-size:.74rem;font-weight:600;padding:.2rem .55rem;border-radius:100px;
+    background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--border)
+  }
+  .goals{background:var(--surface-2);border-radius:10px;padding:.9rem 1.1rem;margin:0 0 1.2rem}
+  .goals p{margin:0 0 .3rem;font-family:var(--font-display);font-weight:600;font-size:.86rem;color:var(--ink-soft)}
+  .goals ul{margin:0;padding-left:1.2em}
+
+  .role{border-radius:12px;padding:1rem 1.15rem;margin:1rem 0}
+  .role h4{display:flex;align-items:center;gap:.5rem;font-size:1rem;margin:0 0 .5rem}
+  .role .pill{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.16rem .5rem;border-radius:100px}
+  .role.teacher{background:var(--brand-wash);border:1px solid color-mix(in srgb,var(--brand) 22%,transparent)}
+  .role.teacher .pill{background:var(--brand);color:#fff}
+  .role.teacher h4{color:var(--brand-ink)}
+  .role.student{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+  .role.student .pill{background:var(--accent);color:#3a2405}
+  .role.student h4{color:var(--accent-ink)}
+  .role ol,.role ul{margin:.3rem 0 0}
+  .role p:last-child,.role ol:last-child,.role ul:last-child{margin-bottom:0}
+
+  .checks{list-style:none;padding:0;margin:.4rem 0 0}
+  .checks li{display:flex;gap:.6rem;align-items:flex-start;margin:.45rem 0}
+  .checks input{margin-top:.34rem;flex:none;width:16px;height:16px;accent-color:var(--accent)}
+
+  .path{
+    font-family:var(--font-mono);font-size:.82em;background:var(--surface-2);
+    border:1px solid var(--border);border-radius:6px;padding:.06em .45em;white-space:nowrap
+  }
+
+  pre{
+    margin:1rem 0;background:var(--code-wash);border:1px solid color-mix(in srgb,var(--code) 25%,transparent);
+    border-left:4px solid var(--code);border-radius:0 10px 10px 0;padding:1rem 1.1rem;
+    overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.65
+  }
+  pre code{background:none;border:0;padding:0;white-space:pre;color:var(--ink)}
+  .code-cap{font-family:var(--font-display);font-weight:600;font-size:.8rem;color:var(--code-ink);margin:1.4rem 0 -.4rem;display:flex;align-items:center;gap:.4rem}
+
+  .rubric td:first-child{font-weight:600}
+  .stars{color:var(--accent);letter-spacing:2px}
+
+  footer{border-top:1px solid var(--border);padding:2.5rem 0 4rem;color:var(--ink-faint);font-size:.85rem}
+
+  /* ---------- print ---------- */
+  @media print{
+    .toolbar,.toc,.tbtns,.print-hide{display:none!important}
+    .layout{display:block}
+    body{background:#fff;color:#000;font-size:11.5pt}
+    main{max-width:none;padding:0}
+    .lesson,.callout,.role,pre,.tscroll{box-shadow:none;break-inside:avoid}
+    .lesson{break-before:page;border-color:#bbb}
+    .hero{padding-top:0}
+    a{color:#000;text-decoration:none}
+    .facts li,.lesson,.goals,.role,.callout{border-color:#bbb!important}
+  }
+</style>
+
+<div class="toolbar">
+  <div class="wrap">
+    <div class="brandmark"><span class="chip">▸</span><span>Roblox&nbsp;จากศูนย์สู่การเผยแพร่</span></div>
+    <div class="tbtns">
+      <button class="tbtn" id="printBtn" type="button">⤓ พิมพ์ / PDF</button>
+      <button class="tbtn" id="themeBtn" type="button" aria-label="สลับธีมสว่าง/มืด">◐ ธีม</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap layout">
+  <nav class="toc" aria-label="สารบัญ">
+    <div class="toc-h">ภาพรวมคอร์ส</div>
+    <a href="#about">คอร์สนี้คืออะไร</a>
+    <a href="#outcomes">ผลลัพธ์การเรียนรู้</a>
+    <a href="#equipment">อุปกรณ์ที่ต้องเตรียม</a>
+    <a href="#safety">ความปลอดภัย &amp; มารยาทออนไลน์</a>
+    <a href="#schedule">ตารางเรียน 8 คาบ</a>
+    <a href="#howto">วิธีใช้คู่มือเล่มนี้</a>
+    <div class="toc-h">บทเรียน</div>
+    <a href="#l1">1 · เปิดโลก Roblox Studio</a>
+    <a href="#l2">2 · ก้อน Part และการต่อบล็อก</a>
+    <a href="#l3">3 · พื้นโลกและบรรยากาศ</a>
+    <a href="#l4">4 · ทำให้เป็นเกม: เกิด–ตาย–ด่าน</a>
+    <a href="#l5">5 · ออกแบบด่าน Obby</a>
+    <a href="#l6">6 · คะแนน เหรียญ และของเก็บ</a>
+    <a href="#l7">7 · ตกแต่ง เสียง และเทสต์เกม</a>
+    <a href="#l8">8 · เผยแพร่เกมขึ้นเว็บ Roblox</a>
+    <div class="toc-h">ภาคผนวก</div>
+    <a href="#rubric">เกณฑ์การให้คะแนน</a>
+    <a href="#scripts">คลังสคริปต์ (คัดลอกวางได้)</a>
+    <a href="#glossary">อภิธานศัพท์</a>
+    <a href="#troubleshoot">แก้ปัญหาที่เจอบ่อย</a>
+    <a href="#parent">จดหมายถึงผู้ปกครอง</a>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <span class="eyebrow">คู่มือคอร์ส · ป.6</span>
+      <h1>Roblox จากศูนย์สู่การเผยแพร่</h1>
+      <p class="sub">คอร์ส 8 คาบ พานักเรียนชั้นประถมศึกษาปีที่ 6 สร้างเกม Roblox ของตัวเองตั้งแต่ยังไม่มีบัญชี จนกดเผยแพร่เกมให้เพื่อนทั่วโลกเล่นได้จริงบนเว็บ Roblox</p>
+      <ul class="facts">
+        <li><b>8 คาบ</b><span>คาบละ 50–60 นาที</span></li>
+        <li><b>ป.6</b><span>อายุ 11–12 ปี</span></li>
+        <li><b>เน้นสร้างแมป</b><span>+ สคริปต์เบา ๆ แบบคัดลอกวาง</span></li>
+        <li><b>ผลงาน 1 เกม</b><span>เผยแพร่จริงบน Roblox</span></li>
+      </ul>
+    </header>
+
+    <section id="about" class="block">
+      <div class="kicker">01 · ภาพรวม</div>
+      <h2 class="big">คอร์สนี้คืออะไร</h2>
+      <p class="lead">นักเรียนแต่ละคน (หรือจับคู่) จะสร้าง <b>เกมแนวผจญภัยข้ามด่าน (Obby)</b> หนึ่งเกม โดยเรียนรู้การใช้ Roblox Studio การต่อบล็อก การจัดพื้นโลก การใส่จุดเกิด กับดัก จุดเซฟ ระบบเก็บเหรียญและนับคะแนน แล้วจบด้วยการกดเผยแพร่เกมขึ้นเว็บ Roblox ให้เป็นสาธารณะ</p>
+      <p>คอร์สออกแบบให้ <b>ครูที่ไม่เคยเขียนโปรแกรม</b> ก็สอนได้ สคริปต์ทุกชิ้นมีให้คัดลอกวางพร้อมคำอธิบายทีละบรรทัดในภาคผนวก นักเรียนจะได้ฝึกทักษะการออกแบบ การแก้ปัญหา และการทำงานเป็นขั้นตอน มากกว่าการท่องจำโค้ด</p>
+
+      <h3>คอร์สนี้เหมาะกับใคร</h3>
+      <ul>
+        <li>นักเรียน ป.6 ที่ใช้คอมพิวเตอร์พื้นฐานได้ (เปิดโปรแกรม พิมพ์ ลากเมาส์ บันทึกไฟล์)</li>
+        <li>ไม่จำเป็นต้องเคยเล่น Roblox มาก่อน แต่ถ้าเคยเล่นจะช่วยให้เข้าใจเป้าหมายเร็วขึ้น</li>
+        <li>ครูผู้สอนไม่จำเป็นต้องมีพื้นฐานการเขียนโปรแกรม</li>
+      </ul>
+
+      <h3>คำศัพท์หลักที่จะได้ยินบ่อยตลอดคอร์ส</h3>
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>คำ (EN)</th><th>อ่าน / แปล</th><th>ความหมายสั้น ๆ</th></tr></thead>
+          <tbody>
+            <tr><td class="th-term">Roblox Studio</td><td>โรบล็อกซ์ สตูดิโอ</td><td>โปรแกรมสำหรับ "สร้าง" เกม Roblox (คนละตัวกับแอปที่ใช้เล่น)</td></tr>
+            <tr><td class="th-term">Place / Experience</td><td>เพลส / เอ็กซ์พีเรียนซ์</td><td>ตัวเกมหรือโลกหนึ่งโลกที่เราสร้างและเผยแพร่</td></tr>
+            <tr><td class="th-term">Part</td><td>พาร์ต</td><td>ก้อนบล็อกพื้นฐาน เป็นอิฐก้อนเล็กที่สุดที่ใช้ก่อร่างทุกอย่าง</td></tr>
+            <tr><td class="th-term">Explorer</td><td>เอ็กซ์พลอเรอร์</td><td>หน้าต่างรายการสิ่งของทั้งหมดในเกม เหมือนสารบัญ</td></tr>
+            <tr><td class="th-term">Properties</td><td>พร็อพเพอร์ตี้ส์</td><td>หน้าต่างตั้งค่าของสิ่งที่เลือกอยู่ เช่น สี ขนาด วัสดุ</td></tr>
+            <tr><td class="th-term">Anchor</td><td>แองเคอร์</td><td>ตรึงก้อนให้ลอยอยู่กับที่ ไม่ร่วงตามแรงโน้มถ่วง</td></tr>
+            <tr><td class="th-term">Script</td><td>สคริปต์</td><td>ชุดคำสั่งภาษา Luau ที่สั่งให้ของในเกมทำงาน</td></tr>
+            <tr><td class="th-term">Publish</td><td>พับลิช</td><td>อัปโหลดเกมขึ้นเซิร์ฟเวอร์ Roblox เพื่อให้เล่นผ่านเว็บได้</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="outcomes" class="block">
+      <div class="kicker">02 · เป้าหมาย</div>
+      <h2 class="big">ผลลัพธ์การเรียนรู้</h2>
+      <p class="lead">เมื่อจบคอร์ส นักเรียนจะสามารถ...</p>
+      <ol>
+        <li><b>ใช้งาน Roblox Studio</b> — เปิดโปรเจกต์ ใช้หน้าต่าง Explorer และ Properties เคลื่อนกล้อง และบันทึกงานขึ้นคลาวด์ได้</li>
+        <li><b>ก่อสร้างฉาก</b> — สร้างและจัดวาง Part ปรับขนาด/หมุน/ย้าย เปลี่ยนสีและวัสดุ จัดกลุ่มเป็น Model และใช้เครื่องมือ Terrain ขึ้นภูมิประเทศได้</li>
+        <li><b>เปลี่ยนฉากให้เป็นเกม</b> — วางจุดเกิด (SpawnLocation) ใส่กับดัก จุดเซฟด่าน และระบบนับคะแนน/เหรียญ ด้วยสคริปต์สำเร็จรูป</li>
+        <li><b>ออกแบบด่านที่เล่นสนุก</b> — วางระดับความยาก จังหวะพัก และเส้นทางให้ผู้เล่นผ่านได้อย่างท้าทายแต่ไม่หงุดหงิด</li>
+        <li><b>ทดสอบและแก้บั๊ก</b> — เล่นทดสอบเกมตัวเอง รับฟีดแบ็กจากเพื่อน และแก้ไขจุดที่พัง</li>
+        <li><b>เผยแพร่ผลงาน</b> — ตั้งชื่อเกม ใส่ไอคอนและภาพปก ตั้งค่าเป็นสาธารณะ และแชร์ลิงก์เกมของตัวเองได้</li>
+      </ol>
+      <div class="callout tip">
+        <span class="clabel">เชื่อมโยงหลักสูตร</span>
+        <p>คอร์สนี้ฝึก <b>วิทยาการคำนวณ</b> (การคิดเชิงคำนวณ ลำดับขั้นตอน เงื่อนไข การแก้จุดบกพร่อง), <b>การออกแบบและเทคโนโลยี</b> (กระบวนการออกแบบเชิงวิศวกรรม การทำซ้ำเพื่อปรับปรุง) และ <b>ศิลปะ</b> (องค์ประกอบ สี พื้นที่ว่าง)</p>
+      </div>
+    </section>
+
+    <section id="equipment" class="block">
+      <div class="kicker">03 · เตรียมความพร้อม</div>
+      <h2 class="big">อุปกรณ์ที่ต้องเตรียม</h2>
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>รายการ</th><th>รายละเอียด</th></tr></thead>
+          <tbody>
+            <tr><td class="th-term">เครื่องคอมพิวเตอร์</td><td>Windows 10/11 หรือ macOS ต่อเครื่องต่อ 1 คน หรือ 1 คู่ · แนะนำ RAM 8 GB ขึ้นไป · <b>ใช้แท็บเล็ต/โทรศัพท์สร้างไม่ได้</b> (Roblox Studio ลงได้เฉพาะคอมพิวเตอร์)</td></tr>
+            <tr><td class="th-term">เมาส์</td><td>จำเป็นมาก การหมุนกล้องและจัดวางก้อนใช้ทัชแพดจะลำบาก เตรียมเมาส์แบบมีล้อกลางให้ครบ</td></tr>
+            <tr><td class="th-term">อินเทอร์เน็ต</td><td>ต่อเน็ตตลอดคาบ ใช้ล็อกอิน บันทึกงานขึ้นคลาวด์ และเผยแพร่</td></tr>
+            <tr><td class="th-term">Roblox Studio</td><td>ดาวน์โหลดฟรีจาก <span class="path">create.roblox.com</span> · ติดตั้งล่วงหน้าทุกเครื่องก่อนคาบ 1 (ไฟล์ ~200 MB + อัปเดต)</td></tr>
+            <tr><td class="th-term">บัญชี Roblox</td><td>คนละ 1 บัญชี · ผู้เรียนอายุต่ำกว่า 13 ปีต้องกรอกวันเกิดจริงเพื่อให้ระบบเปิดโหมดคุ้มครองเด็ก · ต้องมีอีเมลผู้ปกครองยืนยัน (ดูจดหมายถึงผู้ปกครองท้ายเล่ม)</td></tr>
+            <tr><td class="th-term">ห้องเรียน</td><td>โปรเจกเตอร์/จอสำหรับครูสาธิต · แนะนำให้ครูมีเครื่องของตัวเองแยกต่างหาก</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="clabel">ทำก่อนเปิดคอร์ส 1 สัปดาห์</span>
+        <p>1) ส่งจดหมายขออนุญาตผู้ปกครองและให้กรอกอีเมลยืนยัน &nbsp; 2) ติดตั้ง Roblox Studio ทุกเครื่องแล้วเปิดทดสอบ 1 รอบ &nbsp; 3) สร้างบัญชีให้ทัน หรือให้ผู้ปกครองช่วยสร้างที่บ้าน &nbsp; 4) ทดสอบว่าโรงเรียนไม่บล็อกโดเมน <span class="path">roblox.com</span> และ <span class="path">rbxcdn.com</span></p>
+      </div>
+    </section>
+
+    <section id="safety" class="block">
+      <div class="kicker">04 · ต้องรู้ก่อนเริ่ม</div>
+      <h2 class="big">ความปลอดภัยและมารยาทออนไลน์</h2>
+      <p class="lead">สอนเรื่องนี้ในคาบ 1 และย้ำซ้ำเมื่อถึงคาบเผยแพร่ ถือเป็นส่วนหนึ่งของการให้คะแนน</p>
+      <h3>กติกาบัญชีและความเป็นส่วนตัว</h3>
+      <ul>
+        <li><b>ห้ามใส่ข้อมูลส่วนตัว</b> ในชื่อผู้ใช้ ชื่อเกม หรือข้อความในเกม — ไม่มีชื่อจริงเต็ม เบอร์โทร ที่อยู่ โรงเรียน รูปหน้าตัวเอง</li>
+        <li>ตั้งรหัสผ่านที่เดายาก และไม่บอกใครนอกจากผู้ปกครอง — ครูไม่ควรเก็บรหัสผ่านนักเรียนไว้เอง ให้บันทึกไว้ที่ผู้ปกครอง</li>
+        <li>เปิด <b>การยืนยันตัวตนสองชั้น (2-Step Verification)</b> ผ่านอีเมลผู้ปกครองถ้าทำได้</li>
+        <li>ตรวจให้แน่ใจว่าตั้งวันเกิดถูกต้อง ระบบ Roblox จะกรองแชตและจำกัดการติดต่อจากคนแปลกหน้าให้เองสำหรับบัญชีเด็ก</li>
+      </ul>
+      <h3>มารยาทเมื่อเผยแพร่และเล่นเกมของเพื่อน</h3>
+      <ul>
+        <li>เล่นเกมเพื่อนแล้วให้ฟีดแบ็กแบบ "ชม 2 – เสนอ 1": บอกสิ่งที่ชอบ 2 อย่าง และข้อเสนอปรับปรุง 1 อย่าง ด้วยถ้อยคำสุภาพ</li>
+        <li>ห้ามคัดลอกงานเพื่อนมาเผยแพร่เป็นของตัวเอง — เรียนรู้จากกันได้ แต่ต้องมีส่วนที่ออกแบบเอง</li>
+        <li>ถ้าเจอเนื้อหาไม่เหมาะสมในเกมของใคร ให้บอกครูทันที ไม่ตอบโต้เอง</li>
+        <li>เนื้อหาในเกมต้องเหมาะกับทุกวัย: ไม่มีความรุนแรงสมจริง คำหยาบ หรือการพนัน</li>
+      </ul>
+      <div class="callout">
+        <span class="clabel">ข้อกฎหมายที่ครูควรทราบ</span>
+        <p>Roblox กำหนดอายุขั้นต่ำ 13 ปีสำหรับบางฟีเจอร์ และบังคับใช้แนวปฏิบัติคุ้มครองข้อมูลเด็ก การให้นักเรียนต่ำกว่า 13 ปีสมัครต้องผ่านความยินยอมของผู้ปกครอง โรงเรียนควรเก็บใบยินยอมไว้เป็นหลักฐาน</p>
+      </div>
+    </section>
+
+    <section id="schedule" class="block">
+      <div class="kicker">05 · แผนภาพรวม</div>
+      <h2 class="big">ตารางเรียน 8 คาบ</h2>
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>คาบ</th><th>หัวข้อ</th><th>นักเรียนได้อะไรกลับไป</th><th>สคริปต์</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>เปิดโลก Roblox Studio</td><td>บัญชีพร้อมใช้ + โปรเจกต์เปล่าที่บันทึกขึ้นคลาวด์แล้ว</td><td>—</td></tr>
+            <tr><td>2</td><td>ก้อน Part และการต่อบล็อก</td><td>แท่นเริ่มต้นและสะพาน 3–4 ก้อนที่จัดวางเป็น</td><td>—</td></tr>
+            <tr><td>3</td><td>พื้นโลกและบรรยากาศ</td><td>ภูมิประเทศ + ท้องฟ้า/แสงที่สื่ออารมณ์เกม</td><td>—</td></tr>
+            <tr><td>4</td><td>ทำให้เป็นเกม: เกิด–ตาย–ด่าน</td><td>จุดเกิด + กับดักที่ทำให้ตาย + จุดเซฟด่าน</td><td>Kill · Checkpoint</td></tr>
+            <tr><td>5</td><td>ออกแบบด่าน Obby</td><td>ด่านต่อเนื่อง 5–8 จุด เล่นจบได้</td><td>(นำกลับมาใช้)</td></tr>
+            <tr><td>6</td><td>คะแนน เหรียญ และของเก็บ</td><td>กระดานคะแนน + เหรียญเก็บได้เพิ่มแต้ม</td><td>Leaderstats · Coin</td></tr>
+            <tr><td>7</td><td>ตกแต่ง เสียง และเทสต์เกม</td><td>เสียง ข้อความต้อนรับ + บันทึกผลเทสต์กับเพื่อน</td><td>(ปรับแก้)</td></tr>
+            <tr><td>8</td><td>เผยแพร่เกมขึ้นเว็บ Roblox</td><td>เกมสาธารณะ + ลิงก์ที่แชร์ได้ + ไอคอน/ภาพปก</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.9rem;color:var(--ink-soft)">ยืดหยุ่นได้: ถ้ามีเวลาน้อย รวมคาบ 3 กับ 5 และให้คาบ 7 เป็นการบ้าน · ถ้ามีเวลาเหลือ เพิ่มคาบพิเศษให้ตกแต่งและอวดผลงาน (Showcase)</p>
+    </section>
+
+    <section id="howto" class="block">
+      <div class="kicker">06 · คู่มือการใช้</div>
+      <h2 class="big">วิธีใช้คู่มือเล่มนี้</h2>
+      <p>แต่ละบทเรียนมีโครงเหมือนกัน อ่านส่วนของครูก่อนคาบ แล้วแจกหรือฉายส่วนของนักเรียนระหว่างคาบ</p>
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> ส่วนสำหรับครู</h4>
+        <p>จุดประสงค์ · สิ่งที่ต้องเตรียม · การแบ่งเวลาในคาบ · บทสาธิตทีละขั้น · จุดที่นักเรียนมักติด · คำถามเช็กความเข้าใจท้ายคาบ</p>
+      </div>
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ส่วนสำหรับนักเรียน</h4>
+        <p>ขั้นตอนทำตามพร้อมช่องติ๊ก ✓ · กล่อง "ลองเอง" ให้ออกแบบต่อ · ช่องสะท้อนความคิดท้ายคาบ</p>
+      </div>
+      <p style="margin-top:1rem;font-size:.92rem">สัญลักษณ์ที่ใช้: <span class="path">Home ▸ Part</span> หมายถึงคลิกแท็บ Home บนแถบเครื่องมือ แล้วคลิกปุ่ม Part · <kbd>Ctrl</kbd>/<kbd>⌘</kbd> ใช้แทนกันตาม Windows/Mac</p>
+    </section>
+
+    <section id="lessons" class="block">
+      <div class="kicker">บทเรียน</div>
+      <h2 class="big">8 คาบ · จากศูนย์สู่การเผยแพร่</h2>
+      <p class="lead">ทุกคาบใช้เวลา 50–60 นาที มีทั้งส่วนของครูและนักเรียน · เป้าหมายคือทุกคนมีเกมเผยแพร่จริง 1 เกมเมื่อจบคาบ 8</p>
+    </section>
+
+    <!-- ============ LESSON 1 ============ -->
+    <article id="l1" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">1</div>
+        <div>
+          <h3>เปิดโลก Roblox Studio</h3>
+          <div class="en">Getting into Roblox Studio</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">ไม่มีสคริปต์</span><span class="tag">ผลงาน: โปรเจกต์เปล่าบนคลาวด์</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>ล็อกอินเข้า Roblox Studio ด้วยบัญชีของตัวเองได้</li>
+          <li>บอกชื่อและหน้าที่ของหน้าต่างหลัก 4 อย่าง: Viewport, Explorer, Properties, Toolbox</li>
+          <li>เคลื่อนกล้องด้วย <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> + ลากเมาส์ขวา + ล้อกลาง</li>
+          <li>สร้าง place ใหม่จากเทมเพลต Baseplate และบันทึกขึ้น Roblox (Save to Roblox)</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> ติดตั้ง Roblox Studio ทุกเครื่อง · เปิดโปรแกรมทดสอบล็อกอิน 1 รอบต่อเครื่อง · มีรายชื่อบัญชี/รหัสของนักเรียน (เก็บโดยผู้ปกครอง) · ฉายจอครูได้</p>
+        <p><b>แบ่งเวลา:</b></p>
+        <ol>
+          <li><b>0–5 นาที</b> — แนะนำคอร์ส ให้ดูตัวอย่างเกม Obby 1 เกมที่ครูทำไว้ บอกเป้าหมาย "8 คาบ เราจะเผยแพร่เกมของเราเอง"</li>
+          <li><b>5–15 นาที</b> — สอนเรื่อง <a href="#safety">ความปลอดภัยและมารยาทออนไลน์</a> ให้นักเรียนช่วยกันตั้งกติกาห้อง เขียนติดผนัง</li>
+          <li><b>15–30 นาที</b> — สาธิต (ดูขั้นตอนด้านล่าง) นักเรียนดูอย่างเดียว ยังไม่แตะเครื่อง</li>
+          <li><b>30–52 นาที</b> — นักเรียนทำตามส่วนของตัวเอง ครูเดินช่วย</li>
+          <li><b>52–60 นาที</b> — เช็กความเข้าใจ + ทุกคนกด Save to Roblox ให้เห็นกับตา</li>
+        </ol>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li>เปิด Roblox Studio → ล็อกอิน → หน้าแรกเลือก <span class="path">New ▸ Baseplate</span></li>
+          <li>ชี้ให้ดู 4 หน้าต่าง: กลางจอคือ <b>Viewport</b> (เวที) · ขวาบน <b>Explorer</b> (สารบัญของทุกอย่าง) · ขวาล่าง <b>Properties</b> (ตั้งค่าของที่เลือก) · ล่าง <b>Toolbox</b> (คลังโมเดลสำเร็จ)</li>
+          <li>สอนกล้อง: กดค้าง <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เดินหน้า/ถอย/ซ้าย/ขวา · <kbd>Q</kbd>/<kbd>E</kbd> ขึ้น/ลง · <b>ลากเมาส์ขวาค้าง</b> หันกล้อง · <b>ล้อกลาง</b> ซูม · <kbd>F</kbd> พุ่งไปหาก้อนที่เลือก</li>
+          <li>ใน Explorer คลิก <span class="path">Workspace ▸ Baseplate</span> แล้วชี้ว่า Properties เปลี่ยนไปแสดงค่าของมัน</li>
+          <li>เมนู <span class="path">File ▸ Save to Roblox</span> ตั้งชื่อ <span class="path">Obby ของ [ชื่อเล่น]</span> คำอธิบายสั้น ๆ กด Create — อธิบายว่านี่คือการเซฟขึ้นคลาวด์ เปิดจากเครื่องไหนก็ได้</li>
+        </ol>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>ล็อกอินวนไม่เข้า → ปิด Studio เปิดใหม่ / เช็กเน็ต / ล็อกอินผ่านเว็บ <span class="path">create.roblox.com</span> ก่อนแล้วค่อยเปิด Studio</li>
+          <li>"กล้องหลุดไปไหนไม่รู้" → กดเลือก Baseplate ใน Explorer แล้วกด <kbd>F</kbd> ดึงกล้องกลับ</li>
+          <li>เผลอลากจอ Explorer/Properties หาย → เมนู <span class="path">View</span> คลิกเปิดกลับ</li>
+          <li>ลืมกด Save → ย้ำให้ทำเป็นนิสัยทุกครั้งก่อนเลิกคาบ</li>
+        </ul>
+        <p><b>เช็กความเข้าใจท้ายคาบ (ถามปากเปล่า):</b> หน้าต่างไหนใช้ดูรายการของทั้งหมด? · จะเปลี่ยนสีก้อนต้องดูที่หน้าต่างไหน? · "Save to Roblox" ต่างจากเซฟลงเครื่องยังไง?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 1</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> เปิด Roblox Studio และล็อกอินด้วยบัญชีของฉัน</li>
+          <li><input type="checkbox"> สร้างโปรเจกต์ใหม่แบบ <span class="path">New ▸ Baseplate</span></li>
+          <li><input type="checkbox"> ชี้ให้เพื่อนดูได้ว่าหน้าต่าง Viewport / Explorer / Properties / Toolbox อยู่ตรงไหน</li>
+          <li><input type="checkbox"> ฝึกบินกล้อง: บินขึ้นสูง มองลงมาเห็นแผ่นพื้นทั้งแผ่น แล้วบินกลับลงมา</li>
+          <li><input type="checkbox"> คลิก Baseplate ใน Explorer แล้วดูว่า Properties เปลี่ยน</li>
+          <li><input type="checkbox"> <span class="path">File ▸ Save to Roblox</span> ตั้งชื่อเกมว่า "Obby ของ ______"</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลองเอง 🧩</b> — ใน Properties ของ Baseplate ลองเปลี่ยนช่อง <span class="path">Color</span> เป็นสีที่ชอบ แล้วเปลี่ยน <span class="path">Material</span> จาก Plastic เป็นอย่างอื่น สังเกตว่าพื้นเปลี่ยนไปยังไง แล้ว Save อีกครั้ง</p>
+        <p><b>สะท้อนความคิด ✍️</b> — สิ่งที่ตื่นเต้นที่สุดวันนี้คือ ______ · สิ่งที่ยังงงคือ ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 2 ============ -->
+    <article id="l2" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">2</div>
+        <div>
+          <h3>ก้อน Part และการต่อบล็อก</h3>
+          <div class="en">Building with Parts</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">ไม่มีสคริปต์</span><span class="tag">ผลงาน: แท่นเริ่ม + บันได/สะพาน</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>สร้าง Part ใหม่ และใช้เครื่องมือ Move / Scale / Rotate พร้อมระบบ snap</li>
+          <li>แก้ค่าใน Properties: Size, Position, Color, Material, <b>Anchored</b>, Transparency</li>
+          <li>ทำสำเนา (<kbd>Ctrl</kbd>+<kbd>D</kbd>) และจัดกลุ่มหลายก้อนเป็น <b>Model</b> พร้อมตั้งชื่อ</li>
+          <li>อธิบายได้ว่าทำไมต้อง Anchor ก้อนที่ไม่อยากให้ร่วง</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> ให้นักเรียนเปิดโปรเจกต์คาบที่แล้วจาก <span class="path">File ▸ Open from Roblox</span> · เตรียมภาพตัวอย่าง "แท่นเริ่มเกม" ให้ดูเป็นเป้าหมาย</p>
+        <p><b>แบ่งเวลา:</b> ทวน 5 นาที · สาธิต 15 นาที · นักเรียนสร้าง 30 นาที · เก็บงาน + Save 5 นาที</p>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li><span class="path">Home ▸ Part</span> จะได้ก้อนสี่เหลี่ยม 1 ก้อนกลางจอ</li>
+          <li>กดปุ่มเครื่องมือบนแท็บ Home: <b>Move</b> (ลูกศร) · <b>Scale</b> (จุดมุม) · <b>Rotate</b> (วงแหวน) — ลากที่ลูกศร/จุด/วงแหวนเพื่อปรับ</li>
+          <li>แท็บ <span class="path">Model</span> เปิด <b>Snap to Grid</b> ตั้ง <span class="path">1 stud</span> เพื่อให้ก้อนต่อกันพอดี ไม่มีร่อง</li>
+          <li>ใน Properties ตั้ง <span class="path">Size</span> = <span class="path">12, 1, 12</span> ทำเป็นแท่นยืน · เปลี่ยน <span class="path">Color</span> และ <span class="path">Material</span></li>
+          <li><b>สำคัญ:</b> ติ๊ก <span class="path">Anchored</span> = ✓ ไม่งั้นก้อนจะร่วงตอนกด Play</li>
+          <li>กด <kbd>Ctrl</kbd>+<kbd>D</kbd> ทำสำเนา แล้ว Move ไปต่อกันเป็นบันได 3 ขั้น</li>
+          <li>ลากคลุมเลือกทุกก้อนใน Viewport → คลิกขวา → <span class="path">Group</span> (หรือ <kbd>Ctrl</kbd>+<kbd>G</kbd>) → ดับเบิลคลิกชื่อใน Explorer เปลี่ยนเป็น <span class="path">StartArea</span></li>
+          <li>กด <span class="path">Play</span> (ปุ่มสามเหลี่ยม) เดินตัวละครขึ้นบันได แล้วกด <span class="path">Stop</span></li>
+        </ol>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>ก้อนร่วงหาย / ตัวละครทะลุพื้น → ลืมติ๊ก Anchored</li>
+          <li>ก้อนจมลงไปในพื้น → ปิด collisions ชั่วคราวด้วยปุ่ม <b>Collisions</b> บนแท็บ Model หรือยก Position แกน Y ขึ้น</li>
+          <li>หาก้อนที่เพิ่งสร้างไม่เจอ → คลิกชื่อใน Explorer แล้วกด <kbd>F</kbd></li>
+          <li>เผลอ Scale จนก้อนบางเป็นกระดาษ → พิมพ์ค่า Size ตรง ๆ ใน Properties</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> Anchored ทำอะไร? · Scale ต่างจาก Move ยังไง? · Group มีไว้ทำไม?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 2</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> เปิดโปรเจกต์ Obby ของฉันจากคลาวด์</li>
+          <li><input type="checkbox"> สร้างแท่นเริ่มต้น 1 ก้อน ขนาด <span class="path">12, 1, 12</span> · ติ๊ก Anchored · เลือกสีและวัสดุ</li>
+          <li><input type="checkbox"> เปิด Snap to Grid = 1 stud</li>
+          <li><input type="checkbox"> ทำบันไดหรือสะพาน 3–4 ก้อน ต่อจากแท่นเริ่ม (ทุกก้อน Anchored)</li>
+          <li><input type="checkbox"> เลือกทุกก้อนแล้ว Group ตั้งชื่อ <span class="path">StartArea</span></li>
+          <li><input type="checkbox"> กด Play เดินทดสอบว่าขึ้นได้จริง แล้ว Stop</li>
+          <li><input type="checkbox"> Save to Roblox</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลองเอง 🧩</b> — เพิ่ม "ราวกันตก" สองข้างสะพาน โดยทำก้อนบาง ๆ ยาวเท่าสะพาน · หรือทำก้อนลอยเป็นก้อนกระโดด (Anchored) ให้ต้องกระโดดข้าม 1 ช่อง</p>
+        <p><b>สะท้อนความคิด ✍️</b> — ก้อนที่ทำยากที่สุดคือ ______ เพราะ ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 3 ============ -->
+    <article id="l3" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">3</div>
+        <div>
+          <h3>พื้นโลกและบรรยากาศ</h3>
+          <div class="en">Terrain, sky &amp; mood</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">ไม่มีสคริปต์</span><span class="tag">ผลงาน: ภูมิประเทศ + ธีมเกม</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>ใช้ Terrain Editor: Add, Sculpt, Paint และตั้ง Sea level</li>
+          <li>ปรับ Lighting: <span class="path">ClockTime</span>, <span class="path">Brightness</span> และเพิ่ม Atmosphere</li>
+          <li>เลือก "ธีม" ให้เกม (เกาะ / ถ้ำ / อวกาศ / หิมะ) แล้วจัดฉากให้เข้าธีม</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> ทำ mood board สั้น ๆ 4 ธีม (เกาะ/ถ้ำ/อวกาศ/หิมะ) ให้นักเรียนเลือก · เตือนว่างานก่อสร้างคาบ 2 ต้อง Anchored อยู่แล้วเพื่อไม่ให้ terrain ดันหาย</p>
+        <p><b>แบ่งเวลา:</b> เลือกธีม 5 นาที · สาธิต terrain + lighting 15 นาที · นักเรียนจัดฉาก 30 นาที · Save 5 นาที</p>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li>แท็บ <span class="path">Editor ▸ Terrain</span> (หรือปุ่ม Terrain Editor) → เครื่องมือ <b>Add</b> เลือก Material เช่น Grass ลากในอากาศใต้แท่นเริ่มเพื่อสร้างพื้นดิน</li>
+          <li><b>Sculpt / Erase</b> ปั้นเนินหรือลบส่วนเกิน · <b>Sea Level</b> ใส่น้ำทั้งฉากในคลิกเดียว</li>
+          <li><b>Paint</b> เปลี่ยนผิว เช่น ทางเดินเป็น Sand ยอดเขาเป็น Rock</li>
+          <li>ใน Explorer เลือก <span class="path">Lighting</span> → Properties ตั้ง <span class="path">ClockTime</span> = <span class="path">17</span> (เย็น) หรือ <span class="path">2</span> (กลางคืน) · ปรับ <span class="path">Brightness</span></li>
+          <li>คลิกขวา <span class="path">Lighting</span> → <span class="path">Insert Object ▸ Atmosphere</span> ปรับ <span class="path">Density</span> ให้มีหมอกบาง ๆ · เพิ่ม <span class="path">Sky</span> ถ้าอยากเปลี่ยนท้องฟ้า</li>
+        </ol>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>Terrain กลบงานก่อสร้าง → ใช้ Erase ค่อย ๆ เปิดออก หรือกด <kbd>Ctrl</kbd>+<kbd>Z</kbd></li>
+          <li>เครื่องช้าลงมาก → terrain แปรงใหญ่เกิน ลดขนาด Brush Size และ base size</li>
+          <li>เผลอลบ terrain ทั้งก้อน → <kbd>Ctrl</kbd>+<kbd>Z</kbd> ทันที</li>
+          <li>ฉากมืดจนมองไม่เห็น → ClockTime กลับไป 14 และเพิ่ม Brightness</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> ธีมที่เลือกคืออะไร และจะทำให้ฉากเข้าธีมยังไง 2 อย่าง?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 3</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> เลือกธีมเกมของฉัน: ______</li>
+          <li><input type="checkbox"> ใช้ Terrain ▸ Add สร้างพื้นดินรองรับด่านทั้งหมด</li>
+          <li><input type="checkbox"> ปั้นเนิน 1 ลูก และใส่ Sea Level เป็นน้ำ (ถ้าเข้าธีม)</li>
+          <li><input type="checkbox"> Paint ผิวอย่างน้อย 2 แบบให้ต่างกัน</li>
+          <li><input type="checkbox"> ตั้ง ClockTime และ Brightness ให้เข้าธีม</li>
+          <li><input type="checkbox"> เพิ่ม Atmosphere ให้มีหมอกบาง ๆ</li>
+          <li><input type="checkbox"> Save to Roblox</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลองเอง 🧩</b> — ปั้นภูเขาสูงไว้เป็นฉากหลัง 1 ลูก · หรือขุดถ้ำให้ด่านลอดผ่าน · ลองเปลี่ยน Sky ให้เป็นเวลากลางคืนมีดาว</p>
+        <p><b>สะท้อนความคิด ✍️</b> — บรรยากาศที่ฉันอยากให้ผู้เล่นรู้สึกคือ ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 4 ============ -->
+    <article id="l4" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">4</div>
+        <div>
+          <h3>ทำให้เป็นเกม: เกิด – ตาย – ด่าน</h3>
+          <div class="en">Spawn, kill bricks &amp; checkpoints</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">สคริปต์: A1 · A2</span><span class="tag">ผลงาน: ด่านที่ตาย/เซฟได้จริง</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>วาง <span class="path">SpawnLocation</span> เป็นจุดเกิดของผู้เล่น</li>
+          <li>ใส่สคริปต์ "กับดัก" (kill brick) ให้ก้อนที่แตะแล้วตาย</li>
+          <li>สร้างระบบจุดเซฟด่าน (checkpoint) ให้เกิดใหม่ที่ด่านล่าสุด</li>
+          <li>ทดสอบด้วยปุ่ม Play และแก้เมื่อสคริปต์ไม่ทำงาน</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> เปิด <a href="#scripts">คลังสคริปต์</a> ค้างไว้ · เตรียมไฟล์ข้อความสคริปต์ A1, A2 แชร์ให้นักเรียนคัดลอก (Google Doc หรือใบปริ้น) · ทดลองวางเองก่อน 1 รอบ</p>
+        <p><b>แนวคิดที่ต้องปูให้นักเรียน (สั้น ๆ):</b> สคริปต์คือ "รายการคำสั่ง" ที่คอมพิวเตอร์อ่านจากบนลงล่าง · เราวางสคริปต์ <b>ไว้ข้างในก้อน</b> ที่อยากให้มันคุม · คอมพิวเตอร์อ่านตัวพิมพ์ใหญ่-เล็กไม่เหมือนกัน พิมพ์ผิดนิดเดียวก็ไม่ทำงาน</p>
+        <p><b>แบ่งเวลา:</b> ทวน 5 · สาธิต spawn+kill 15 · นักเรียนทำ spawn+kill 15 · สาธิต checkpoint 10 · นักเรียนทำ + เทส 10 · Save 5</p>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li><b>จุดเกิด:</b> <span class="path">Home ▸ Spawn</span> วางบนแท่นเริ่ม · ใน Properties ติ๊ก Anchored · ลบ SpawnLocation อื่นถ้ามีซ้ำ</li>
+          <li><b>กับดัก:</b> สร้าง Part ยาว ๆ เป็นพื้นช่วงอันตราย ตั้งสีแดง Material = Neon ตั้งชื่อ <span class="path">LavaPart</span> · ใน Explorer ชี้ที่ก้อน คลิก ➕ → <span class="path">Script</span></li>
+          <li>ลบโค้ดตัวอย่างในสคริปต์ วางสคริปต์ <b>A1 (Kill Brick)</b> → กด Play เดินไปเหยียบ ตัวละครต้องตายและเกิดใหม่ที่ spawn</li>
+          <li><b>จุดเซฟด่าน:</b> ใน Explorer ที่ <span class="path">Workspace</span> คลิก ➕ → <span class="path">Folder</span> ตั้งชื่อ <span class="path">Checkpoints</span></li>
+          <li>สร้าง Part แบน ๆ เป็นแป้นเซฟ วางไว้ต้นด่านแต่ละช่วง ลากเข้าโฟลเดอร์ Checkpoints · เปลี่ยนชื่อก้อนเป็นตัวเลข <span class="path">1</span>, <span class="path">2</span>, <span class="path">3</span> ตามลำดับ (ก้อนแรก = จุดเริ่ม)</li>
+          <li>ใน <span class="path">ServerScriptService</span> คลิก ➕ → <span class="path">Script</span> วางสคริปต์ <b>A2 (Checkpoints)</b></li>
+          <li>กด Play เดินไปแตะแป้น 2 แล้วจงใจไปเหยียบกับดัก — ต้องเกิดใหม่ที่แป้น 2 ไม่ใช่จุดเริ่ม</li>
+        </ol>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>เหยียบกับดักแล้วไม่ตาย → สคริปต์อยู่ผิดที่ (ต้องอยู่ <b>ข้างในก้อน</b>) · หรือก้อนติ๊ก <span class="path">CanTouch</span> = off · หรือชื่อ event สะกดผิด</li>
+          <li>Checkpoint ไม่จำ → ก้อนไม่ได้อยู่ในโฟลเดอร์ <span class="path">Checkpoints</span> · ชื่อก้อนไม่ใช่ตัวเลขล้วน · สคริปต์ A2 ไม่ได้อยู่ใน ServerScriptService</li>
+          <li>เกิดใต้พื้น → แป้นเซฟไม่ Anchored หรือจมใน terrain ยก Position Y ขึ้นเล็กน้อย</li>
+          <li>มี error สีแดงใน <span class="path">Output</span> → อ่านบรรทัดที่มันชี้ เทียบตัวอักษรกับต้นฉบับทีละตัว</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> สคริปต์ kill ต้องวางที่ไหน? · ทำไม checkpoint ต้องตั้งชื่อเป็นตัวเลข? · เปิด Output ไว้ทำไม?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 4</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> วาง Spawn บนแท่นเริ่ม ติ๊ก Anchored และลบ spawn ที่ซ้ำ</li>
+          <li><input type="checkbox"> สร้างก้อนกับดัก สีแดง Material Neon ชื่อ LavaPart</li>
+          <li><input type="checkbox"> ใส่ Script ไว้ข้างในก้อน แล้ววางสคริปต์ A1</li>
+          <li><input type="checkbox"> กด Play → เหยียบกับดัก → ตายและเกิดใหม่ ✓</li>
+          <li><input type="checkbox"> สร้างโฟลเดอร์ Checkpoints ใน Workspace</li>
+          <li><input type="checkbox"> ทำแป้นเซฟ 3 อัน ตั้งชื่อ 1 / 2 / 3 ลากเข้าโฟลเดอร์</li>
+          <li><input type="checkbox"> วางสคริปต์ A2 ใน ServerScriptService</li>
+          <li><input type="checkbox"> ทดสอบ: แตะแป้น 2 แล้วตาย → เกิดที่แป้น 2 ✓</li>
+          <li><input type="checkbox"> Save to Roblox</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลองเอง 🧩</b> — ทำกับดักแบบอื่น: ก้อนหนามที่โผล่จากพื้น, ช่องว่างให้ตกลงเหว (ทำก้อนกับดักบาง ๆ ไว้ก้นเหว), หรือกำแพงไฟที่ต้องวิ่งผ่านจังหวะ</p>
+        <p><b>สะท้อนความคิด ✍️</b> — ตอนสคริปต์ไม่ทำงาน ฉันแก้ยังไง ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 5 ============ -->
+    <article id="l5" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">5</div>
+        <div>
+          <h3>ออกแบบด่าน Obby</h3>
+          <div class="en">Designing a playable obby</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">นำสคริปต์เดิมมาใช้</span><span class="tag">ผลงาน: ด่าน 5–8 ช่วง เล่นจบได้</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>อธิบาย "เส้นความยาก" (difficulty curve): เริ่มง่าย ค่อย ๆ ยากขึ้น มีจุดพักหายใจ</li>
+          <li>ต่อด่านให้ครบ 5–8 ช่วง แต่ละช่วงมีแป้นเซฟ 1 อัน</li>
+          <li>ใช้การทำสำเนาและ Group เพื่อสร้างเร็วขึ้น</li>
+          <li>เดินทดสอบจนเล่นจบด่านได้ตั้งแต่ต้นจนจบ</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> วาดเส้นความยากบนกระดาน (แกนนอน = ช่วงที่ 1→8, แกนตั้ง = ความยาก) ให้เห็นภาพว่ากราฟควรค่อย ๆ ไต่ขึ้นและมีจุด "ย่อ" หลังช่วงยาก</p>
+        <p><b>หลักออกแบบที่สอน (5 ข้อ):</b></p>
+        <ol>
+          <li><b>ช่วงแรกต้องผ่านได้ใน 10 วินาที</b> เพื่อให้ผู้เล่นรู้สึกว่า "ทำได้"</li>
+          <li><b>เพิ่มความยากทีละอย่าง</b> — ช่วงนี้เพิ่มช่องกว้างขึ้น ช่วงหน้าค่อยเพิ่มก้อนขยับ อย่าใส่พร้อมกันหมด</li>
+          <li><b>มีจุดพัก</b> — หลังช่วงยาก ใส่พื้นกว้าง ๆ ปลอดภัยให้ตั้งหลัก</li>
+          <li><b>แป้นเซฟก่อนทุกช่วงยาก</b> ผู้เล่นจะได้ไม่ต้องเริ่มใหม่ทั้งหมด</li>
+          <li><b>เล่นจบได้จริง</b> — ออกแบบเสร็จต้องเดินผ่านเองให้ได้ทุกช่วง</li>
+        </ol>
+        <p><b>แบ่งเวลา:</b> สอนหลักออกแบบ 10 · นักเรียนวางแผนด่านบนกระดาษ 5 · สร้าง 30 · เทสรอบตัวเอง 5 · Save 5</p>
+        <p><b>เทคนิคทำเร็ว:</b> สร้างช่วงหนึ่งให้ดี → Group → <kbd>Ctrl</kbd>+<kbd>D</kbd> → เลื่อนไปต่อ → แก้รายละเอียดให้ต่างกัน · อย่าลืมเปลี่ยนชื่อแป้นเซฟให้เลขไม่ซ้ำ</p>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>ด่านยากเกินจนตัวเองยังผ่านไม่ได้ → ลดระยะกระโดด / เพิ่มขนาดก้อน</li>
+          <li>ด่านยาวแต่ราบเรียบ น่าเบื่อ → สลับประเภทอุปสรรค: กระโดดข้าม, เดินก้อนแคบ, ลอดใต้, หลบกับดัก</li>
+          <li>แป้นเซฟเลขซ้ำ → checkpoint จะสับสน ให้ไล่เลขใหม่ 1→n</li>
+          <li>ก้อนสุดท้ายไม่มีเส้นชัย → ทำแป้นสีทองใหญ่ ๆ เป็น "FINISH" ไว้ก่อน (คาบ 6 จะทำให้มันนับคะแนน)</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> เส้นความยากที่ดีหน้าตาเป็นยังไง? · ทำไมต้องมีจุดพัก?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 5</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> วาดแผนด่านบนกระดาษ: ช่วงที่ 1–___ พร้อมจดว่าแต่ละช่วงยากเรื่องอะไร</li>
+          <li><input type="checkbox"> สร้างด่านให้ครบอย่างน้อย 5 ช่วง ต่อเนื่องจากแท่นเริ่ม</li>
+          <li><input type="checkbox"> ช่วงแรกผ่านได้เร็ว ง่ายจริง</li>
+          <li><input type="checkbox"> มีจุดพักปลอดภัยอย่างน้อย 1 จุด</li>
+          <li><input type="checkbox"> มีแป้นเซฟก่อนทุกช่วงยาก ตั้งเลขเรียง 1 → n ไม่ซ้ำ</li>
+          <li><input type="checkbox"> ใช้อุปสรรคอย่างน้อย 3 แบบที่ต่างกัน</li>
+          <li><input type="checkbox"> ทำแป้น FINISH สีทองไว้ท้ายด่าน</li>
+          <li><input type="checkbox"> เดินทดสอบตั้งแต่ต้นจนจบ ผ่านได้ทุกช่วง</li>
+          <li><input type="checkbox"> Save to Roblox</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลองเอง 🧩</b> — เพิ่มทางลับ (shortcut) ที่ยากมากแต่ข้ามได้ 2 ช่วง · หรือทำก้อนหายตอนเหยียบ (ใส่สคริปต์ A5 จากคลัง)</p>
+        <p><b>สะท้อนความคิด ✍️</b> — ช่วงที่ฉันคิดว่าสนุกที่สุดคือช่วง ___ เพราะ ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 6 ============ -->
+    <article id="l6" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">6</div>
+        <div>
+          <h3>คะแนน เหรียญ และของเก็บ</h3>
+          <div class="en">Leaderboard, coins &amp; pickups</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">สคริปต์: A3 · A4</span><span class="tag">ผลงาน: กระดานคะแนน + เหรียญ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>เพิ่มกระดานคะแนนมุมจอ (leaderstats) แสดงค่า <span class="path">Coins</span></li>
+          <li>ทำเหรียญที่เดินชนแล้วหาย และบวกแต้มให้ผู้เล่น</li>
+          <li>วางเหรียญกระจายตามด่านให้เป็นรางวัลของการเสี่ยง</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> แชร์สคริปต์ A3, A4 · เตรียมเหรียญต้นแบบ 1 อัน (Part ทรงกระบอกบาง สีทอง Material Neon ชื่อ <span class="path">Coin</span>) ให้ดู</p>
+        <p><b>แนวคิดที่ปูให้:</b> "leaderstats" คือกล่องเก็บตัวเลขของผู้เล่นแต่ละคน Roblox จะเอาไปโชว์มุมขวาบนให้เอง · เหรียญแต่ละอันมีสคริปต์เล็ก ๆ ที่พูดว่า "ถ้ามีคนแตะ ให้บวก 1 แล้วลบตัวเองทิ้ง"</p>
+        <p><b>แบ่งเวลา:</b> ทวน 5 · สาธิต leaderstats 10 · นักเรียนใส่ 10 · สาธิตเหรียญ 10 · นักเรียนทำเหรียญ + วาง 10 · เทส + Save 5</p>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li>ใน <span class="path">ServerScriptService</span> เพิ่ม Script วางสคริปต์ <b>A3 (Leaderstats – Coins)</b> → กด Play เห็นกล่อง Coins = 0 มุมขวาบน</li>
+          <li>ทำเหรียญต้นแบบ: Part ทรงกระบอก บาง ๆ สีทอง Neon ชื่อ <span class="path">Coin</span> · ติ๊ก Anchored · ปิด <span class="path">CanCollide</span> (เดินทะลุได้ ไม่สะดุด)</li>
+          <li>ใส่ Script ข้างในเหรียญ วางสคริปต์ <b>A4 (Coin Pickup)</b></li>
+          <li>Group เหรียญ (ถ้าจะใส่เอฟเฟกต์หมุนทีหลัง) → <kbd>Ctrl</kbd>+<kbd>D</kbd> ทำสำเนาไปวางตามด่าน จุดที่เก็บยากให้วางเหรียญเยอะ</li>
+          <li>กด Play เดินเก็บ ดูเลข Coins เพิ่มและเหรียญหาย</li>
+        </ol>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>ไม่มีกล่องคะแนนโผล่ → A3 ไม่ได้อยู่ใน ServerScriptService หรือชื่อ stat ผิด</li>
+          <li>เดินชนเหรียญแล้วไม่บวก → ลืมใส่ Script ในเหรียญที่ทำสำเนา (สำเนาจาก Part เปล่า) · แก้โดยทำสำเนา "จากอันที่มีสคริปต์แล้ว"</li>
+          <li>บวกรัวหลายแต้มต่อการชน 1 ครั้ง → เพิ่ม debounce (สคริปต์ A4 มีให้แล้ว อย่าลบออก)</li>
+          <li>เหรียญทำผู้เล่นสะดุด → ยังเปิด CanCollide อยู่</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> leaderstats แสดงที่ไหนของจอ? · ทำไมต้องทำสำเนาจากเหรียญที่มีสคริปต์แล้ว?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 6</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> ใส่สคริปต์ A3 ใน ServerScriptService</li>
+          <li><input type="checkbox"> กด Play เห็นกล่อง Coins มุมขวาบน</li>
+          <li><input type="checkbox"> ทำเหรียญต้นแบบ ชื่อ Coin · Anchored ✓ · CanCollide ✗</li>
+          <li><input type="checkbox"> ใส่ Script ข้างในเหรียญ วางสคริปต์ A4</li>
+          <li><input type="checkbox"> ทดสอบเก็บ 1 เหรียญ เลขเพิ่มเป็น 1 และเหรียญหาย ✓</li>
+          <li><input type="checkbox"> ทำสำเนาเหรียญ (จากอันที่มีสคริปต์) วางตามด่านอย่างน้อย 8 อัน</li>
+          <li><input type="checkbox"> วางเหรียญกลุ่มหนึ่งไว้ในที่เก็บยาก เป็นรางวัลของการเสี่ยง</li>
+          <li><input type="checkbox"> Save to Roblox</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลองเอง 🧩</b> — ใส่สคริปต์ A6 ให้เหรียญหมุนช้า ๆ · หรือทำ "เหรียญเพชร" สีฟ้าที่ให้ 5 แต้ม (แก้เลขในสคริปต์ A4 จาก 1 เป็น 5) · ทำป้ายบอกจำนวนเหรียญทั้งหมดในด่าน</p>
+        <p><b>สะท้อนความคิด ✍️</b> — ฉันวางเหรียญยากไว้ตรงไหน และทำไม ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 7 ============ -->
+    <article id="l7" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">7</div>
+        <div>
+          <h3>ตกแต่ง เสียง และเทสต์เกม</h3>
+          <div class="en">Polish, sound &amp; playtesting</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">ปรับแก้สคริปต์เดิม</span><span class="tag">ผลงาน: บันทึกผลเทส + แก้บั๊ก</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>ใส่เสียงบรรยากาศและป้ายข้อความในเกม</li>
+          <li>ให้เพื่อนเล่นทดสอบ และจดผลอย่างเป็นระบบ (bug log)</li>
+          <li>จัดลำดับความสำคัญของสิ่งที่ต้องแก้ แล้วแก้อย่างน้อย 3 อย่าง</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> ปริ้นตาราง bug log แจกคนละใบ · จับคู่ "นักทดสอบ" ไว้ล่วงหน้า · ย้ำกติกาฟีดแบ็ก "ชม 2 – เสนอ 1"</p>
+        <p><b>แบ่งเวลา:</b> สาธิตเสียง+ป้าย 10 · นักเรียนตกแต่ง 15 · สลับกันเทสกับคู่ + จด 15 · แก้บั๊ก 15 · Save 5</p>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li><b>เสียงบรรยากาศ:</b> ใน Explorer เลือก <span class="path">SoundService</span> (หรือใส่ในก้อน) → ➕ <span class="path">Sound</span> → ใน Properties ช่อง <span class="path">SoundId</span> กดค้นเพลงจาก Marketplace ที่ใช้ได้ฟรี · ติ๊ก <span class="path">Looped</span> และ <span class="path">Playing</span></li>
+          <li><b>เสียงเอฟเฟกต์:</b> ใส่ Sound ในก้อน FINISH แล้วให้สคริปต์เล่นเมื่อแตะ (สคริปต์ A7)</li>
+          <li><b>ป้ายข้อความ:</b> ใช้ Toolbox ค้น "sign" เลือกโมเดลป้าย แก้ข้อความ · หรือใส่ <span class="path">BillboardGui ▸ TextLabel</span> ในก้อนเล็ก ๆ ให้ลอยบอก "START", "ระวังลาวา!", "FINISH"</li>
+          <li><b>เก็บกวาด:</b> ลบก้อนทดลองที่ไม่ใช้ · ตรวจทุกก้อน Anchored · กด Play รอบสุดท้ายดูว่าไม่มี error แดงใน Output</li>
+        </ol>
+        <p><b>วิธีเทสกับคู่:</b> เจ้าของเกมนั่งดูเงียบ ๆ ห้ามบอกทาง · คนเทสพูดออกมาดัง ๆ ว่ากำลังคิดอะไร ("ตรงนี้ไม่รู้ว่าต้องกระโดด") · เจ้าของจดลง bug log · ครบ 7 นาทีสลับ</p>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>เพลงไม่ดัง → ยังไม่ติ๊ก Playing / SoundId ว่าง / เสียงนั้นไม่อนุญาตให้ใช้</li>
+          <li>อยากแก้ทุกอย่างพร้อมกัน → ให้เลือกแก้ 3 อย่างที่ "ผู้เล่นติดบ่อยสุด" ก่อน</li>
+          <li>แก้แล้วพังจุดอื่น → Save ก่อนแก้ทุกครั้ง จะได้ย้อนได้</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> ทำไมเจ้าของเกมห้ามบอกทางตอนเพื่อนเทส? · เลือกแก้บั๊กไหนก่อน เพราะอะไร?</p>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 7</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> ใส่เสียงบรรยากาศแบบ Looped อย่างน้อย 1 เสียง</li>
+          <li><input type="checkbox"> ใส่ป้ายข้อความอย่างน้อย 3 ป้าย (START / เตือน / FINISH)</li>
+          <li><input type="checkbox"> ลบก้อนทดลองที่ไม่ใช้ และตรวจทุกก้อน Anchored</li>
+          <li><input type="checkbox"> ให้เพื่อนเล่นเทส และจดลงตาราง bug log ด้านล่าง</li>
+          <li><input type="checkbox"> ไปเทสเกมเพื่อน และให้ฟีดแบ็ก "ชม 2 – เสนอ 1"</li>
+          <li><input type="checkbox"> เลือกแก้ 3 อย่างที่สำคัญสุด แล้วแก้ให้เสร็จ</li>
+          <li><input type="checkbox"> Save to Roblox</li>
+        </ul>
+        <div class="tscroll" style="margin-top:.9rem">
+          <table>
+            <thead><tr><th>#</th><th>ผู้เล่นติดตรงไหน / เจอปัญหาอะไร</th><th>ร้ายแรงแค่ไหน (1–3)</th><th>จะแก้ยังไง</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              <tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:.9rem"><b>สะท้อนความคิด ✍️</b> — ฟีดแบ็กที่ทำให้ฉัน "อ๋อ" ที่สุดคือ ______</p>
+      </div>
+    </article>
+
+    <!-- ============ LESSON 8 ============ -->
+    <article id="l8" class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">8</div>
+        <div>
+          <h3>เผยแพร่เกมขึ้นเว็บ Roblox</h3>
+          <div class="en">Publish &amp; go public</div>
+          <div class="meta-row">
+            <span class="tag">50–60 นาที</span><span class="tag">ไม่มีสคริปต์</span><span class="tag">ผลงาน: เกมสาธารณะ + ลิงก์</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goals">
+        <p>จุดประสงค์ — เมื่อจบคาบนักเรียนจะ...</p>
+        <ul>
+          <li>ตั้งค่าเกมใน Game Settings: ชื่อ คำอธิบาย อุปกรณ์ที่เล่นได้</li>
+          <li>ใส่ไอคอนเกมและภาพปก (thumbnail)</li>
+          <li>เปลี่ยนสถานะเกมเป็น <b>Public</b> และคัดลอกลิงก์เกมของตัวเอง</li>
+          <li>เข้าใจว่าเมื่อเป็นสาธารณะแล้ว ใครก็เล่นได้ และต้องรับผิดชอบเนื้อหา</li>
+        </ul>
+      </div>
+
+      <div class="role teacher">
+        <h4><span class="pill">ครูใช้</span> เตรียมก่อนคาบ &amp; แผนการสอน</h4>
+        <p><b>เตรียม:</b> ให้นักเรียนเตรียมรูปไอคอน 1 รูป (จับภาพหน้าจอเกมสวย ๆ ด้วย <kbd>PrtSc</kbd> หรือวาดเอง ขนาดจัตุรัส) · ทวน <a href="#safety">มารยาทการเผยแพร่</a> อีกรอบ · เตรียมที่รวมลิงก์ (padlet / สไลด์) สำหรับ Showcase</p>
+        <p><b>แบ่งเวลา:</b> ทวนมารยาท 5 · สาธิตเผยแพร่ 15 · นักเรียนทำ 20 · Showcase เล่นเกมกันในห้อง 15</p>
+        <p><b>บทสาธิตทีละขั้น:</b></p>
+        <ol>
+          <li><b>เผยแพร่ครั้งแรก:</b> <span class="path">File ▸ Publish to Roblox</span> (ถ้ายังเป็น draft จากคาบ 1 จะเป็นการอัปเดต) ยืนยันชื่อและคำอธิบาย</li>
+          <li>เปิด <span class="path">Home ▸ Game Settings</span> → แท็บ <b>Basic Info</b>: ชื่อเกม, คำอธิบาย (ไม่มีข้อมูลส่วนตัว), Genre = Obby/Adventure</li>
+          <li>แท็บ <b>Places</b> → เลือก place หลัก → ใส่ <b>Icon</b> (รูปจัตุรัส) และ <b>Thumbnails</b> (รูปกว้าง 1–3 รูป)</li>
+          <li>แท็บ <b>Permissions</b> (หรือ <b>Basic Info ▸ Playability</b>) → ตั้งเป็น <b>Public</b> → Save</li>
+          <li>ไปที่เว็บ <span class="path">create.roblox.com ▸ Creations</span> → คลิกเกม → ปุ่ม <b>⋯ ▸ Copy Link</b> หรือกด <b>Play</b> เพื่อดูหน้าเกมจริงบนเว็บ</li>
+          <li>ทดสอบเปิดลิงก์ในแท็บใหม่ ให้เห็นว่าเล่นผ่านเว็บได้จริง</li>
+        </ol>
+        <p><b>นักเรียนมักติดตรงนี้:</b></p>
+        <ul>
+          <li>กด Publish แล้วไม่ขึ้น → ยังไม่ได้ล็อกอิน / เน็ตหลุด / ชื่อเกมว่าง</li>
+          <li>ตั้ง Public ไม่ได้ (ปุ่มเทา) → บัญชีอายุน้อยบางฟีเจอร์จำกัด ให้เผยแพร่แบบ <b>Friends</b> หรือให้ครูช่วยจากบัญชีที่ดูแล · ตรวจว่ายืนยันอีเมลผู้ปกครองแล้ว</li>
+          <li>ไอคอนอัปโหลดไม่ผ่าน → ไฟล์ต้องเป็น PNG/JPG และต้องรอระบบตรวจรูปสักครู่</li>
+          <li>เพื่อนเปิดลิงก์แล้วเข้าไม่ได้ → รอ 2–3 นาทีให้ระบบประมวลผล หรือเกมยังไม่ Public</li>
+        </ul>
+        <p><b>เช็กความเข้าใจ:</b> "Public" หมายความว่าอะไร? · ถ้าอยากให้เฉพาะเพื่อนเล่นต้องตั้งค่าไหน? · เจอเนื้อหาไม่เหมาะสมในเกมคนอื่นต้องทำยังไง?</p>
+        <div class="callout tip">
+          <span class="clabel">หลังจบคอร์ส</span>
+          <p>ให้นักเรียนเก็บลิงก์เกมไว้ในแฟ้มสะสมงาน · แนะให้กลับมาอัปเดตเกมต่อที่บ้านได้ · เกมที่ Public จะมีหน้าสถิติผู้เล่นให้ดูใน Creations</p>
+        </div>
+      </div>
+
+      <div class="role student">
+        <h4><span class="pill">นักเรียนทำ</span> ใบงานคาบ 8</h4>
+        <ul class="checks">
+          <li><input type="checkbox"> เตรียมรูปไอคอนเกม 1 รูป (จัตุรัส) และภาพปกอย่างน้อย 1 รูป</li>
+          <li><input type="checkbox"> <span class="path">File ▸ Publish to Roblox</span> อัปเดตเกมเวอร์ชันล่าสุด</li>
+          <li><input type="checkbox"> Game Settings ▸ Basic Info: ตรวจชื่อ + คำอธิบาย (ไม่มีข้อมูลส่วนตัว)</li>
+          <li><input type="checkbox"> Game Settings ▸ Places: ใส่ Icon และ Thumbnail</li>
+          <li><input type="checkbox"> ตั้งสถานะเกมเป็น Public (หรือ Friends ถ้าระบบจำกัด) แล้ว Save</li>
+          <li><input type="checkbox"> คัดลอกลิงก์เกมของฉันจาก create.roblox.com ▸ Creations</li>
+          <li><input type="checkbox"> เปิดลิงก์ในแท็บใหม่ ทดสอบว่าเล่นผ่านเว็บได้</li>
+          <li><input type="checkbox"> วางลิงก์ลงในที่รวมงานของห้อง</li>
+          <li><input type="checkbox"> เล่นเกมเพื่อนอย่างน้อย 3 เกม และกดถูกใจ / ให้ฟีดแบ็กสุภาพ</li>
+        </ul>
+        <p style="margin-top:.9rem"><b>ลิงก์เกมของฉัน:</b> <span class="path">https://www.roblox.com/games/________________</span></p>
+        <p><b>สะท้อนความคิดปิดคอร์ส ✍️</b> — สิ่งที่ภูมิใจที่สุดในเกมของฉันคือ ______ · ถ้ามีเวลาอีก 1 คาบ ฉันจะเพิ่ม ______ · ทักษะใหม่ที่ได้จากคอร์สนี้คือ ______</p>
+      </div>
+    </article>
+
+    <!-- ============ RUBRIC ============ -->
+    <section id="rubric" class="block">
+      <div class="kicker">ภาคผนวก · ก</div>
+      <h2 class="big">เกณฑ์การให้คะแนน (Rubric)</h2>
+      <p class="lead">ประเมินจากชิ้นงานสุดท้าย + ใบงานระหว่างคาบ + พฤติกรรม รวม 100 คะแนน · เน้นกระบวนการมากกว่าความสวย</p>
+      <div class="tscroll">
+        <table class="rubric">
+          <thead><tr><th>เกณฑ์</th><th>ดีเยี่ยม <span class="stars">★★★</span></th><th>ใช้ได้ <span class="stars">★★</span></th><th>ต้องพัฒนา <span class="stars">★</span></th><th>คะแนน</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>การก่อสร้างฉาก</td>
+              <td>ด่าน 6+ ช่วง จัดวางเป็นระเบียบ ทุกก้อน Anchored ใช้สี/วัสดุเข้าธีม</td>
+              <td>ด่าน 4–5 ช่วง ใช้งานได้ มีจุดหลุดเล็กน้อย</td>
+              <td>ด่านไม่ครบ 4 ช่วง หรือมีก้อนร่วง/ทะลุ</td>
+              <td>/25</td>
+            </tr>
+            <tr>
+              <td>ระบบเกม (สคริปต์)</td>
+              <td>จุดเกิด กับดัก จุดเซฟ กระดานคะแนน และเหรียญ ทำงานครบถูกต้อง</td>
+              <td>ทำงานได้ 3–4 ระบบ มีบั๊กที่ยังแก้ไม่หมด</td>
+              <td>ทำงานได้ 2 ระบบหรือน้อยกว่า</td>
+              <td>/25</td>
+            </tr>
+            <tr>
+              <td>การออกแบบด่าน</td>
+              <td>เริ่มง่าย ไล่ยากขึ้น มีจุดพัก เล่นจบได้ ท้าทายแต่ไม่หงุดหงิด</td>
+              <td>มีเส้นความยากพอสมควร เล่นจบได้</td>
+              <td>ยาก/ง่ายกระโดดไปมา หรือเล่นไม่จบ</td>
+              <td>/15</td>
+            </tr>
+            <tr>
+              <td>การตกแต่งและบรรยากาศ</td>
+              <td>ภูมิประเทศ แสง เสียง ป้าย เข้าธีมเดียวกันชัดเจน</td>
+              <td>มีการตกแต่งครบองค์ประกอบหลัก</td>
+              <td>แทบไม่มีการตกแต่ง</td>
+              <td>/10</td>
+            </tr>
+            <tr>
+              <td>การทดสอบและปรับปรุง</td>
+              <td>บันทึก bug log ครบ แก้ตามฟีดแบ็ก 3+ จุด อธิบายได้ว่าแก้อะไร</td>
+              <td>มี bug log และแก้บางส่วน</td>
+              <td>ไม่มีหลักฐานการทดสอบ/แก้ไข</td>
+              <td>/10</td>
+            </tr>
+            <tr>
+              <td>การเผยแพร่และมารยาท</td>
+              <td>เผยแพร่สำเร็จ ตั้งค่าครบ ไม่มีข้อมูลส่วนตัว ให้ฟีดแบ็กเพื่อนสุภาพ</td>
+              <td>เผยแพร่สำเร็จ ตั้งค่าไม่ครบบางส่วน</td>
+              <td>เผยแพร่ไม่สำเร็จ หรือมีเนื้อหา/ชื่อไม่เหมาะสม</td>
+              <td>/15</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.9rem;color:var(--ink-soft)">ปรับสัดส่วนได้ตามบริบท · สำหรับงานคู่ ให้ประเมินการแบ่งงานเพิ่มเติมจากบันทึกของแต่ละคน</p>
+    </section>
+
+    <!-- ============ SCRIPTS ============ -->
+    <section id="scripts" class="block">
+      <div class="kicker">ภาคผนวก · ข</div>
+      <h2 class="big">คลังสคริปต์ (คัดลอกวางได้)</h2>
+      <p class="lead">ทุกสคริปต์เป็นภาษา <b>Luau</b> · ระวังตัวพิมพ์ใหญ่-เล็ก · วางให้ถูกที่ตามหัวข้อ · เปิดหน้าต่าง <span class="path">View ▸ Output</span> ไว้เสมอเพื่อดู error</p>
+
+      <div class="callout">
+        <span class="clabel">วิธีใส่สคริปต์</span>
+        <p>1) ใน Explorer เอาเมาส์ชี้ที่ก้อน/บริการที่ต้องการ &nbsp; 2) กดปุ่ม ➕ &nbsp; 3) เลือก <span class="path">Script</span> &nbsp; 4) ลบข้อความตัวอย่างทั้งหมด &nbsp; 5) วางโค้ดจากคลังนี้ &nbsp; 6) กด <kbd>Ctrl</kbd>+<kbd>S</kbd> แล้วทดสอบด้วย Play</p>
+      </div>
+
+      <p class="code-cap">▸ A1 — Kill Brick &nbsp;·&nbsp; วางไว้ <b>ข้างในก้อนกับดัก</b></p>
+      <pre><code>local trap = script.Parent
+
+-- เมื่อมีอะไรมาแตะก้อนนี้
+trap.Touched:Connect(function(hit)
+	local character = hit.Parent
+	local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+	if humanoid then
+		humanoid.Health = 0   -- ทำให้ผู้เล่นตาย แล้ว Roblox จะพาไปเกิดใหม่เอง
+	end
+end)</code></pre>
+
+      <p class="code-cap">▸ A2 — Checkpoints &nbsp;·&nbsp; วางใน <b>ServerScriptService</b> &nbsp;·&nbsp; แป้นเซฟตั้งชื่อ 1, 2, 3… อยู่ในโฟลเดอร์ <span class="path">Checkpoints</span> ใน Workspace</p>
+      <pre><code>local Players = game:GetService("Players")
+local checkpoints = workspace:WaitForChild("Checkpoints")
+
+-- ตอนตัวละครเกิด ให้ย้ายไปที่แป้นเซฟล่าสุดของผู้เล่นคนนั้น
+local function onCharacterAdded(character, player)
+	local stage = player:GetAttribute("Stage") or 1
+	local pad = checkpoints:FindFirstChild(tostring(stage))
+	if pad then
+		local root = character:WaitForChild("HumanoidRootPart")
+		task.wait(0.2)
+		root.CFrame = pad.CFrame + Vector3.new(0, 4, 0)
+	end
+end
+
+local function onPlayerAdded(player)
+	player:SetAttribute("Stage", 1)
+	player.CharacterAdded:Connect(function(character)
+		onCharacterAdded(character, player)
+	end)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+
+-- เมื่อผู้เล่นแตะแป้นเซฟ ให้จำเลขด่านไว้ (เฉพาะเลขที่มากกว่าเดิม)
+for _, pad in ipairs(checkpoints:GetChildren()) do
+	local stageNumber = tonumber(pad.Name)
+	if stageNumber then
+		pad.Touched:Connect(function(hit)
+			local player = Players:GetPlayerFromCharacter(hit.Parent)
+			if player then
+				local current = player:GetAttribute("Stage") or 1
+				if stageNumber &gt; current then
+					player:SetAttribute("Stage", stageNumber)
+				end
+			end
+		end)
+	end
+end</code></pre>
+
+      <p class="code-cap">▸ A3 — Leaderstats (กระดานคะแนน Coins) &nbsp;·&nbsp; วางใน <b>ServerScriptService</b></p>
+      <pre><code>local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+	local stats = Instance.new("Folder")
+	stats.Name = "leaderstats"      -- ชื่อนี้ห้ามพิมพ์ผิด Roblox ใช้ชื่อนี้โชว์มุมจอ
+	stats.Parent = player
+
+	local coins = Instance.new("IntValue")
+	coins.Name = "Coins"
+	coins.Value = 0
+	coins.Parent = stats
+end)</code></pre>
+
+      <p class="code-cap">▸ A4 — Coin Pickup &nbsp;·&nbsp; วางไว้ <b>ข้างในเหรียญ</b> (เหรียญ: Anchored ✓, CanCollide ✗)</p>
+      <pre><code>local coin = script.Parent
+local Players = game:GetService("Players")
+
+local COIN_VALUE = 1     -- อยากให้เหรียญนี้กี่แต้ม เปลี่ยนเลขนี้
+local collected = false  -- กันเก็บซ้ำหลายรอบจากการแตะครั้งเดียว
+
+coin.Touched:Connect(function(hit)
+	if collected then return end
+	local player = Players:GetPlayerFromCharacter(hit.Parent)
+	if not player then return end
+
+	local stats = player:FindFirstChild("leaderstats")
+	local coins = stats and stats:FindFirstChild("Coins")
+	if coins then
+		collected = true
+		coins.Value = coins.Value + COIN_VALUE
+		coin:Destroy()
+	end
+end)</code></pre>
+
+      <p class="code-cap">▸ A5 — Disappearing Block (ก้อนหายเมื่อเหยียบ) &nbsp;·&nbsp; วางไว้ <b>ข้างในก้อน</b></p>
+      <pre><code>local block = script.Parent
+local RESET_TIME = 3
+local busy = false
+
+block.Touched:Connect(function(hit)
+	if busy then return end
+	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+	if not humanoid then return end
+
+	busy = true
+	task.wait(0.5)
+	block.Transparency = 0.6
+	block.CanCollide = false
+	task.wait(RESET_TIME)
+	block.Transparency = 0
+	block.CanCollide = true
+	busy = false
+end)</code></pre>
+
+      <p class="code-cap">▸ A6 — Spinning Coin (เหรียญหมุน) &nbsp;·&nbsp; วางไว้ <b>ข้างในเหรียญ</b> (ต้อง Anchored)</p>
+      <pre><code>local RunService = game:GetService("RunService")
+local coin = script.Parent
+
+RunService.Heartbeat:Connect(function(deltaTime)
+	coin.CFrame = coin.CFrame * CFrame.Angles(0, math.rad(90) * deltaTime, 0)
+end)</code></pre>
+
+      <p class="code-cap">▸ A7 — Finish Line (เส้นชัย: เล่นเสียง + บวก 10 แต้ม) &nbsp;·&nbsp; วางไว้ <b>ข้างในก้อน FINISH</b> (ใส่ Sound ในก้อนด้วยถ้าต้องการเสียง)</p>
+      <pre><code>local finish = script.Parent
+local sound = finish:FindFirstChildWhichIsA("Sound")
+local Players = game:GetService("Players")
+local won = {}
+
+finish.Touched:Connect(function(hit)
+	local player = Players:GetPlayerFromCharacter(hit.Parent)
+	if not player or won[player] then return end
+	won[player] = true
+
+	if sound then
+		sound:Play()
+	end
+
+	local stats = player:FindFirstChild("leaderstats")
+	local coins = stats and stats:FindFirstChild("Coins")
+	if coins then
+		coins.Value = coins.Value + 10
+	end
+
+	task.wait(3)
+	won[player] = nil
+end)</code></pre>
+
+      <div class="callout warn">
+        <span class="clabel">อ่าน error ยังไง</span>
+        <p>ถ้ามีข้อความสีแดงใน Output เช่น <span class="path">Workspace.LavaPart.Script:4: attempt to index nil</span> ให้ดูเลข <b>:4</b> คือบรรทัดที่ 4 ของสคริปต์นั้น เปิดไปดูแล้วเทียบตัวอักษรกับต้นฉบับทีละตัว มักเป็นการพิมพ์ชื่อผิด ตัวพิมพ์เล็กใหญ่ หรือลืมวงเล็บ</p>
+      </div>
+    </section>
+
+    <!-- ============ GLOSSARY ============ -->
+    <section id="glossary" class="block">
+      <div class="kicker">ภาคผนวก · ค</div>
+      <h2 class="big">อภิธานศัพท์</h2>
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>คำ (EN)</th><th>ไทย</th><th>ความหมาย</th></tr></thead>
+          <tbody>
+            <tr><td class="th-term">Viewport</td><td>ช่องมองภาพ</td><td>พื้นที่ 3 มิติกลางจอที่เราสร้างและมองเห็นเกม</td></tr>
+            <tr><td class="th-term">Explorer</td><td>ตัวสำรวจ</td><td>รายการต้นไม้ของทุกสิ่งในเกม จัดเป็นชั้น ๆ</td></tr>
+            <tr><td class="th-term">Properties</td><td>คุณสมบัติ</td><td>ค่าปรับแต่งของสิ่งที่เลือก เช่น Size, Color, Anchored</td></tr>
+            <tr><td class="th-term">Toolbox</td><td>กล่องเครื่องมือ</td><td>คลังโมเดล รูป เสียง สำเร็จรูปจากชุมชน Roblox</td></tr>
+            <tr><td class="th-term">Part</td><td>ก้อน</td><td>บล็อกพื้นฐาน หน่วยเล็กสุดในการก่อสร้าง</td></tr>
+            <tr><td class="th-term">Stud</td><td>สตัด</td><td>หน่วยวัดระยะใน Roblox (ประมาณ 28 ซม.)</td></tr>
+            <tr><td class="th-term">Anchored</td><td>ตรึงอยู่กับที่</td><td>ก้อนไม่ตกและไม่ขยับตามแรงชน</td></tr>
+            <tr><td class="th-term">CanCollide</td><td>ชนได้</td><td>ถ้าเปิด ผู้เล่นเดินชนก้อนแล้วหยุด ถ้าปิดจะเดินทะลุ</td></tr>
+            <tr><td class="th-term">Material</td><td>วัสดุ</td><td>ผิวของก้อน เช่น Plastic, Wood, Neon, Grass</td></tr>
+            <tr><td class="th-term">Model</td><td>โมเดล</td><td>กลุ่มของหลายก้อนที่รวมกันเป็นชิ้นเดียว</td></tr>
+            <tr><td class="th-term">Terrain</td><td>ภูมิประเทศ</td><td>พื้นดิน ภูเขา น้ำ ถ้ำ ที่ปั้นด้วยเครื่องมือ Terrain</td></tr>
+            <tr><td class="th-term">SpawnLocation</td><td>จุดเกิด</td><td>ตำแหน่งที่ผู้เล่นปรากฏตัวเมื่อเข้าเกมหรือเกิดใหม่</td></tr>
+            <tr><td class="th-term">Script</td><td>สคริปต์</td><td>ชุดคำสั่งที่เซิร์ฟเวอร์รัน สั่งให้ของในเกมทำงาน</td></tr>
+            <tr><td class="th-term">Event / Touched</td><td>เหตุการณ์</td><td>สัญญาณที่เกิดขึ้นเมื่อมีบางอย่างเกิด เช่น มีคนแตะก้อน</td></tr>
+            <tr><td class="th-term">leaderstats</td><td>ค่าสถิติผู้เล่น</td><td>กล่องตัวเลขของผู้เล่นที่ Roblox เอาไปแสดงมุมขวาบน</td></tr>
+            <tr><td class="th-term">Output</td><td>หน้าต่างผลลัพธ์</td><td>ที่แสดงข้อความและ error จากสคริปต์</td></tr>
+            <tr><td class="th-term">Play / Stop</td><td>เล่น / หยุด</td><td>ปุ่มทดสอบเกมใน Studio โดยไม่ต้องเผยแพร่</td></tr>
+            <tr><td class="th-term">Publish</td><td>เผยแพร่</td><td>อัปโหลดเกมขึ้น Roblox ให้เล่นผ่านเว็บ/แอปได้</td></tr>
+            <tr><td class="th-term">Public / Friends</td><td>สาธารณะ / เพื่อน</td><td>ระดับการเข้าถึงเกม ใครเล่นได้บ้าง</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ TROUBLESHOOT ============ -->
+    <section id="troubleshoot" class="block">
+      <div class="kicker">ภาคผนวก · ง</div>
+      <h2 class="big">แก้ปัญหาที่เจอบ่อย</h2>
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>อาการ</th><th>สาเหตุที่พบบ่อย &amp; วิธีแก้</th></tr></thead>
+          <tbody>
+            <tr><td class="th-term">Studio ล็อกอินไม่เข้า</td><td>ปิดเปิดโปรแกรมใหม่ · ล็อกอินผ่านเว็บ create.roblox.com ก่อน · เช็กว่าโรงเรียนไม่บล็อก roblox.com / rbxcdn.com · ลองเน็ตมือถือ</td></tr>
+            <tr><td class="th-term">ก้อนร่วงหาย / ตัวละครทะลุพื้น</td><td>ลืมติ๊ก Anchored — เลือกก้อนทั้งหมดแล้วติ๊ก Anchored พร้อมกันได้</td></tr>
+            <tr><td class="th-term">หาก้อนที่สร้างไม่เจอ</td><td>คลิกชื่อใน Explorer แล้วกด <kbd>F</kbd> · หรือ Ctrl+Z เผื่อเผลอลบ</td></tr>
+            <tr><td class="th-term">หน้าต่าง Explorer/Properties หาย</td><td>เมนู <span class="path">View</span> คลิกเปิดกลับ</td></tr>
+            <tr><td class="th-term">กล้องหลุดไปไกล</td><td>เลือกก้อนใน Explorer กด <kbd>F</kbd> ดึงกล้องกลับ</td></tr>
+            <tr><td class="th-term">เหยียบกับดักแล้วไม่ตาย</td><td>สคริปต์ต้องอยู่ <b>ข้างในก้อน</b> · CanTouch ต้องเปิด · เทียบชื่อ <span class="path">Touched</span> / <span class="path">Humanoid</span> ว่าสะกดถูก</td></tr>
+            <tr><td class="th-term">Checkpoint ไม่จำด่าน</td><td>แป้นต้องอยู่ในโฟลเดอร์ <span class="path">Checkpoints</span> · ชื่อต้องเป็นตัวเลขล้วน 1,2,3 · สคริปต์ A2 อยู่ใน ServerScriptService · แป้นต้อง Anchored</td></tr>
+            <tr><td class="th-term">กระดานคะแนนไม่ขึ้น</td><td>สคริปต์ A3 ต้องอยู่ใน ServerScriptService · โฟลเดอร์ต้องชื่อ <span class="path">leaderstats</span> เป๊ะ ๆ (ตัวเล็กทั้งหมด)</td></tr>
+            <tr><td class="th-term">เก็บเหรียญแล้วไม่บวกแต้ม</td><td>เหรียญที่ทำสำเนาไม่มีสคริปต์ — ต้องทำสำเนาจากเหรียญ "ที่มีสคริปต์แล้ว" · เช็กว่ามี leaderstats/Coins</td></tr>
+            <tr><td class="th-term">เครื่องช้า / ค้าง ตอนใช้ Terrain</td><td>ลดขนาด Brush · อย่าปั้น terrain ก้อนใหญ่มาก · ปิด Toolbox preview</td></tr>
+            <tr><td class="th-term">มีข้อความแดงใน Output</td><td>อ่านชื่อสคริปต์และเลขบรรทัดที่มันชี้ เปิดไปเทียบกับต้นฉบับในภาคผนวก ข ทีละตัวอักษร</td></tr>
+            <tr><td class="th-term">งานหายหลังปิดโปรแกรม</td><td>ต้อง <span class="path">File ▸ Save to Roblox</span> ทุกครั้ง — การกด Play/Stop ไม่ใช่การเซฟ</td></tr>
+            <tr><td class="th-term">ตั้งเกมเป็น Public ไม่ได้ (ปุ่มเทา)</td><td>ยืนยันอีเมลผู้ปกครองในบัญชีให้เรียบร้อย · บัญชีอายุน้อยบางฟีเจอร์จำกัด ให้ใช้ Friends ไปก่อน หรือครูช่วยจากบัญชีที่ดูแล</td></tr>
+            <tr><td class="th-term">เพื่อนเปิดลิงก์แล้วเข้าเกมไม่ได้</td><td>เกมยังไม่ Public · หรือรอ 2–3 นาทีให้ระบบประมวลผลหลังเผยแพร่ครั้งแรก</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PARENT LETTER ============ -->
+    <section id="parent" class="block">
+      <div class="kicker">ภาคผนวก · จ</div>
+      <h2 class="big">จดหมายถึงผู้ปกครอง (แบบร่างให้ปรับใช้)</h2>
+      <div class="lesson" style="box-shadow:none">
+        <p><b>เรื่อง</b> การเข้าร่วมกิจกรรมการเรียนรู้ "สร้างเกม Roblox จากศูนย์สู่การเผยแพร่"</p>
+        <p>เรียน ท่านผู้ปกครอง</p>
+        <p>ด้วยทางโรงเรียนจัดกิจกรรมการเรียนรู้วิทยาการคำนวณและการออกแบบ โดยให้นักเรียนชั้นประถมศึกษาปีที่ 6 ได้ฝึกสร้างเกมด้วยโปรแกรม <b>Roblox Studio</b> รวม 8 คาบเรียน นักเรียนจะได้ฝึกการคิดเป็นขั้นตอน การออกแบบ และการแก้ปัญหา โดยมีผลงานเป็นเกมของนักเรียนเองที่จะเผยแพร่บนเว็บไซต์ Roblox เมื่อจบกิจกรรม</p>
+        <p><b>สิ่งที่ต้องขอความร่วมมือ</b></p>
+        <ul>
+          <li>อนุญาตให้บุตรหลานมี/ใช้บัญชี Roblox เพื่อการเรียน โดยกรอกวันเดือนปีเกิดจริง เพื่อให้ระบบเปิดโหมดคุ้มครองผู้เยาว์ (กรองแชต จำกัดการติดต่อจากบุคคลภายนอก)</li>
+          <li>ใช้อีเมลของผู้ปกครองในการยืนยันบัญชี และช่วยเปิดการยืนยันตัวตนสองชั้นหากทำได้</li>
+          <li>เก็บรหัสผ่านไว้กับผู้ปกครอง ไม่เปิดเผยแก่ผู้อื่น</li>
+          <li>รับทราบว่าผลงานเกมของนักเรียนอาจถูกตั้งค่าเป็นสาธารณะบน Roblox โดยไม่มีการเปิดเผยข้อมูลส่วนตัวของนักเรียน (ไม่ใช้ชื่อจริง รูปถ่าย ที่อยู่ หรือชื่อโรงเรียนในเกม)</li>
+        </ul>
+        <p style="font-size:.9rem;color:var(--ink-soft)">หมายเหตุ: Roblox กำหนดเงื่อนไขการใช้งานสำหรับผู้ใช้อายุต่ำกว่า 13 ปี ต้องได้รับความยินยอมจากผู้ปกครอง ทางโรงเรียนจะดูแลการใช้งานระหว่างคาบเรียนอย่างใกล้ชิด</p>
+        <hr>
+        <p><b>แบบตอบรับ</b> (โปรดลงชื่อและส่งคืนครูผู้สอน)</p>
+        <p>ข้าพเจ้า (ผู้ปกครอง) ______________________________ ผู้ปกครองของเด็ก ______________________________ ชั้น ______</p>
+        <p>☐ &nbsp;<b>อนุญาต</b> ให้บุตรหลานเข้าร่วมกิจกรรมและใช้บัญชี Roblox เพื่อการเรียนตามเงื่อนไขข้างต้น<br>
+        ☐ &nbsp;<b>ไม่อนุญาต</b> (โรงเรียนจะจัดกิจกรรมทดแทนให้)</p>
+        <p>อีเมลผู้ปกครองสำหรับยืนยันบัญชี ______________________________</p>
+        <p>ลงชื่อผู้ปกครอง ______________________________ วันที่ ____ / ____ / ______</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b>Roblox จากศูนย์สู่การเผยแพร่</b> — คู่มือคอร์ส 8 คาบ สำหรับครูและนักเรียนชั้น ป.6</p>
+    <p style="margin:.3rem 0 0">เอกสารประกอบการสอน ใช้เพื่อการศึกษา · "Roblox" เป็นเครื่องหมายการค้าของ Roblox Corporation เอกสารนี้ไม่มีส่วนเกี่ยวข้องหรือได้รับการรับรองจาก Roblox Corporation · ตรวจสอบเมนูและการตั้งค่าของ Roblox Studio อีกครั้งก่อนสอน เพราะอาจมีการปรับปรุงหน้าจอ</p>
+  </div>
+</footer>

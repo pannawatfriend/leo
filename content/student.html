@@ -1,0 +1,901 @@
+<style>
+  :root{
+    --bg:#FBF9F4; --surface:#FFFFFF; --surface-2:#F2EFE7; --surface-3:#EAE6DA;
+    --ink:#242019; --ink-soft:#6C6558; --ink-faint:#9A9384;
+    --border:#E5E0D3; --border-strong:#D3CCBB;
+    --blue:#2F6FE0; --blue-ink:#1B49A6; --blue-wash:#E7F0FF;
+    --red:#E24B37; --red-ink:#B0331F; --red-wash:#FCEAE6;
+    --green:#1E9E6A; --green-ink:#146F4A; --green-wash:#E2F5EC;
+    --yellow:#EAA80F; --yellow-ink:#8A6205; --yellow-wash:#FBEFD3;
+    --purple:#6F55E8; --purple-ink:#4B34B8; --purple-wash:#ECE8FD;
+    --shadow:0 1px 2px rgba(40,32,16,.05),0 10px 26px rgba(40,32,16,.07);
+    --font-display:"Baloo Thai 2","Baloo 2",system-ui,sans-serif;
+    --font-body:"IBM Plex Sans Thai","IBM Plex Sans",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161C; --surface:#1B1E26; --surface-2:#232733; --surface-3:#2B303D;
+      --ink:#EFECE3; --ink-soft:#A9A294; --ink-faint:#7C7669;
+      --border:#2F333F; --border-strong:#404655;
+      --blue:#6E9BF2; --blue-ink:#B4CCFA; --blue-wash:#182238;
+      --red:#EF7B68; --red-ink:#F4A99B; --red-wash:#2C1B17;
+      --green:#3FC58C; --green-ink:#89E3BE; --green-wash:#142720;
+      --yellow:#EDBB4A; --yellow-ink:#F3D28A; --yellow-wash:#2A2212;
+      --purple:#9784F0; --purple-ink:#C0B4F7; --purple-wash:#1F1B33;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161C; --surface:#1B1E26; --surface-2:#232733; --surface-3:#2B303D;
+    --ink:#EFECE3; --ink-soft:#A9A294; --ink-faint:#7C7669;
+    --border:#2F333F; --border-strong:#404655;
+    --blue:#6E9BF2; --blue-ink:#B4CCFA; --blue-wash:#182238;
+    --red:#EF7B68; --red-ink:#F4A99B; --red-wash:#2C1B17;
+    --green:#3FC58C; --green-ink:#89E3BE; --green-wash:#142720;
+    --yellow:#EDBB4A; --yellow-ink:#F3D28A; --yellow-wash:#2A2212;
+    --purple:#9784F0; --purple-ink:#C0B4F7; --purple-wash:#1F1B33;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:1rem}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font-body);font-size:16.5px;line-height:1.7;-webkit-font-smoothing:antialiased
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;line-height:1.18;margin:0;text-wrap:balance}
+  p{margin:0 0 .85em}
+  b,strong{font-weight:600}
+  a{color:var(--blue-ink)}
+  code,kbd{font-family:var(--font-mono);font-size:.85em}
+  :not(pre)>code{background:var(--surface-2);border:1px solid var(--border);padding:.06em .4em;border-radius:6px;white-space:nowrap}
+  kbd{
+    display:inline-block;background:var(--surface);border:1px solid var(--border-strong);
+    border-bottom-width:2px;border-radius:7px;padding:.02em .5em;font-weight:600;color:var(--ink)
+  }
+  .ui{
+    font-family:var(--font-mono);font-size:.82em;background:var(--blue-wash);color:var(--blue-ink);
+    border:1px solid color-mix(in srgb,var(--blue) 30%,transparent);border-radius:6px;padding:.05em .45em;white-space:nowrap
+  }
+  :focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:5px}
+
+  .sheet{max-width:880px;margin:0 auto;padding:0 clamp(1rem,4vw,2rem)}
+
+  /* toolbar */
+  .bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+  .bar .sheet{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:.55rem;padding-bottom:.55rem}
+  .bar b{font-family:var(--font-display);font-size:.95rem;display:flex;align-items:center;gap:.5rem}
+  .bar .blk{width:22px;height:22px;border-radius:6px;background:var(--blue);display:inline-block;transform:rotate(-8deg)}
+  .bar button{
+    font-family:var(--font-body);font-size:.8rem;font-weight:600;color:var(--ink-soft);
+    background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:.38rem .7rem;cursor:pointer
+  }
+  .bar button:hover{color:var(--ink);border-color:var(--border-strong)}
+
+  /* cover */
+  .cover{text-align:center;padding:3.2rem 0 1.4rem}
+  .cover .eyebrow{
+    display:inline-block;font-family:var(--font-display);font-weight:700;font-size:.82rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--blue-ink);background:var(--blue-wash);
+    border:1px solid color-mix(in srgb,var(--blue) 25%,transparent);padding:.35rem .9rem;border-radius:100px
+  }
+  .cover h1{font-size:clamp(2.3rem,7vw,3.6rem);font-weight:800;margin:1.1rem 0 .5rem;letter-spacing:-.01em}
+  .cover .tag{font-size:clamp(1rem,2.6vw,1.15rem);color:var(--ink-soft);max-width:44ch;margin:0 auto}
+  .nameplate{
+    margin:2rem auto 0;max-width:420px;background:var(--surface);border:2px dashed var(--border-strong);
+    border-radius:16px;padding:1.1rem 1.3rem;text-align:left;font-size:.95rem;line-height:2.4
+  }
+  .nameplate .fill{border-bottom:2px solid var(--border-strong);display:inline-block;min-width:9rem}
+
+  section{scroll-margin-top:4rem}
+  .block{margin:3rem 0}
+  .kicker{font-family:var(--font-display);font-size:.78rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.4rem}
+  h2.big{font-size:clamp(1.55rem,4.5vw,2.1rem);font-weight:800;letter-spacing:-.01em}
+  .lead{font-size:1.05rem;color:var(--ink-soft)}
+  hr{border:0;border-top:1px solid var(--border);margin:2.4rem 0}
+  ul,ol{margin:0 0 1em;padding-left:1.3em}
+  li{margin:.3em 0}
+
+  /* legend cards */
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.9rem;margin:1.4rem 0}
+  .legend div{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:.9rem 1rem;box-shadow:var(--shadow)}
+  .legend b{font-family:var(--font-display);display:block;font-size:.98rem;margin-bottom:.1rem}
+  .legend span{font-size:.88rem;color:var(--ink-soft)}
+
+  /* figures */
+  figure{margin:1.6rem 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.1rem;box-shadow:var(--shadow)}
+  figure svg{width:100%;height:auto;display:block;color:var(--ink)}
+  figcaption{font-size:.9rem;color:var(--ink-soft);margin-top:.7rem;text-align:center}
+  figcaption b{color:var(--ink)}
+
+  /* lesson */
+  .lesson{margin:2.6rem 0}
+  .lesson-tab{display:flex;align-items:center;gap:.9rem;margin-bottom:.4rem}
+  .lesson-tab .num{
+    flex:none;width:52px;height:52px;border-radius:14px;background:var(--blue);color:#fff;
+    font-family:var(--font-display);font-weight:800;font-size:1.6rem;display:grid;place-items:center;transform:rotate(-5deg);
+    box-shadow:var(--shadow)
+  }
+  .lesson-tab h3{font-size:1.4rem}
+  .lesson-tab .en{display:block;font-size:.85rem;font-weight:500;color:var(--ink-faint);font-family:var(--font-body)}
+
+  .build{
+    background:var(--blue-wash);border:1px solid color-mix(in srgb,var(--blue) 22%,transparent);
+    border-radius:14px;padding:1rem 1.2rem;margin:1rem 0 1.4rem
+  }
+  .build b{font-family:var(--font-display);color:var(--blue-ink)}
+
+  .steps{counter-reset:step;list-style:none;padding:0;margin:1.2rem 0;display:flex;flex-direction:column;gap:.7rem}
+  .steps>li{
+    counter-increment:step;background:var(--surface);border:1px solid var(--border);border-radius:13px;
+    padding:.9rem 1rem .9rem 3.4rem;position:relative;box-shadow:var(--shadow)
+  }
+  .steps>li::before{
+    content:counter(step);position:absolute;left:.8rem;top:.85rem;
+    width:1.9rem;height:1.9rem;border-radius:8px;background:var(--surface-2);border:1px solid var(--border);
+    font-family:var(--font-display);font-weight:700;font-size:.95rem;display:grid;place-items:center;color:var(--ink-soft)
+  }
+  .steps>li p{margin:0}
+  .steps>li p+p{margin-top:.35rem}
+  .done{display:inline-flex;align-items:center;gap:.45rem;margin-top:.55rem;font-size:.85rem;color:var(--ink-faint);font-weight:600}
+  .done input{width:16px;height:16px;accent-color:var(--green)}
+
+  .box{border-radius:13px;padding:.95rem 1.1rem;margin:1.1rem 0;border:1px solid var(--border)}
+  .box .h{font-family:var(--font-display);font-weight:700;font-size:.95rem;display:block;margin-bottom:.2rem}
+  .box p:last-child{margin-bottom:0}
+  .box.try{background:var(--yellow-wash);border-color:color-mix(in srgb,var(--yellow) 34%,transparent)}
+  .box.try .h{color:var(--yellow-ink)}
+  .box.note{background:var(--blue-wash);border-color:color-mix(in srgb,var(--blue) 26%,transparent)}
+  .box.note .h{color:var(--blue-ink)}
+  .box.watch{background:var(--red-wash);border-color:color-mix(in srgb,var(--red) 32%,transparent)}
+  .box.watch .h{color:var(--red-ink)}
+  .box.reflect{background:var(--surface-2);border-style:dashed;border-color:var(--border-strong)}
+  .box.reflect .h{color:var(--ink-soft)}
+
+  pre{
+    margin:1rem 0;background:var(--surface-2);border:1px solid var(--border);border-left:4px solid var(--green);
+    border-radius:0 10px 10px 0;padding:.95rem 1.1rem;overflow-x:auto;
+    font-family:var(--font-mono);font-size:.82rem;line-height:1.65
+  }
+  pre code{white-space:pre}
+  .code-title{font-family:var(--font-display);font-weight:700;font-size:.9rem;color:var(--green-ink);margin:1.6rem 0 -.3rem}
+
+  .cert{
+    border:3px double var(--border-strong);border-radius:16px;padding:1.8rem;text-align:center;background:var(--surface);
+    margin:1.6rem 0
+  }
+  .cert h3{font-size:1.5rem;color:var(--blue-ink)}
+  .cert .fill{border-bottom:2px solid var(--border-strong);display:inline-block;min-width:12rem}
+
+  footer{border-top:1px solid var(--border);margin-top:3rem;padding:2rem 0 3.5rem;color:var(--ink-faint);font-size:.85rem;text-align:center}
+
+  @media print{
+    .bar,.print-hide{display:none!important}
+    body{background:#fff;color:#000;font-size:11.5pt}
+    figure,.steps>li,.box,pre{box-shadow:none;break-inside:avoid;border-color:#bbb!important}
+    .lesson{break-before:page}
+    .cover{break-after:page}
+    a{color:#000;text-decoration:none}
+  }
+</style>
+
+<div class="bar">
+  <div class="sheet">
+    <b><span class="blk"></span> สมุดนักสร้างเกม Roblox</b>
+    <div>
+      <button id="printBtn" type="button">⤓ พิมพ์</button>
+      <button id="themeBtn" type="button">◐ ธีม</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <header class="cover">
+    <span class="eyebrow">คู่มือนักเรียน · ป.6</span>
+    <h1>สมุดนักสร้างเกม Roblox</h1>
+    <p class="tag">8 ภารกิจ จากยังไม่มีบัญชี จนเพื่อนทั้งโลกกดเล่นเกมของเราได้จริง</p>
+    <div class="nameplate">
+      ชื่อผู้สร้างเกม <span class="fill"></span><br>
+      ชั้น <span class="fill" style="min-width:4rem"></span> เลขที่ <span class="fill" style="min-width:4rem"></span><br>
+      ชื่อเกมที่ฉันจะสร้าง <span class="fill"></span>
+    </div>
+  </header>
+
+  <section id="howto" class="block">
+    <div class="kicker">อ่านก่อนเริ่ม</div>
+    <h2 class="big">สมุดเล่มนี้ใช้ยังไง</h2>
+    <p class="lead">แต่ละภารกิจ (คาบเรียน) ทำตามข้อ 1, 2, 3… ตามลำดับ ติ๊ก ✓ เมื่อทำเสร็จ ถ้าติดตรงไหนให้ยกมือถามครูได้เลย ไม่มีคำถามไหนโง่</p>
+    <div class="legend">
+      <div><b>1 2 3</b><span>ขั้นตอนที่ต้องทำตามลำดับ · ติ๊กช่อง "ทำแล้ว" เมื่อเสร็จ</span></div>
+      <div><b>🧩 ลองเอง</b><span>ความท้าทายเพิ่ม ทำเมื่อทำข้อหลักเสร็จแล้วและมีเวลาเหลือ</span></div>
+      <div><b>💡 เกร็ดน่ารู้</b><span>คำอธิบายช่วยให้เข้าใจว่าทำไมต้องทำแบบนั้น</span></div>
+      <div><b>⚠️ ระวัง</b><span>จุดที่คนพลาดกันบ่อย อ่านก่อนจะได้ไม่ต้องแก้ทีหลัง</span></div>
+      <div><b><span class="ui">แบบนี้</span></b><span>คือปุ่มหรือเมนูในโปรแกรม ให้หาคำนี้บนหน้าจอ</span></div>
+      <div><b>✍️ บันทึก</b><span>เขียนสิ่งที่คิดหรือเรียนรู้ท้ายคาบ</span></div>
+    </div>
+    <div class="box watch">
+      <span class="h">⚠️ กฎเหล็ก 3 ข้อ</span>
+      <p>1) <b>ห้ามใส่ข้อมูลส่วนตัว</b> — ชื่อจริงเต็ม เบอร์โทร ที่อยู่ โรงเรียน รูปหน้า ห้ามอยู่ในชื่อผู้ใช้ ชื่อเกม หรือข้อความในเกม<br>
+      2) <b>เซฟทุกครั้งก่อนเลิกคาบ</b> ด้วย <span class="ui">File ▸ Save to Roblox</span> — กด Play เฉย ๆ ไม่ใช่การเซฟ<br>
+      3) <b>พูดกับเพื่อนดี ๆ</b> เวลาติเกมเพื่อน ให้ "ชม 2 อย่าง เสนอปรับปรุง 1 อย่าง"</p>
+    </div>
+  </section>
+
+  <section id="map" class="block">
+    <div class="kicker">หน้าอ้างอิง · เปิดกลับมาดูได้ตลอด</div>
+    <h2 class="big">แผนที่หน้าจอ Roblox Studio</h2>
+    <p>เปิดโปรแกรมแล้วจะเจอ 4 ส่วนนี้ จำชื่อมันไว้ เดี๋ยวครูจะพูดถึงบ่อยมาก</p>
+
+    <figure>
+      <svg viewBox="0 0 640 392" role="img" aria-label="ผังหน้าจอ Roblox Studio แสดง 4 ส่วน: แถบเครื่องมือด้านบน, ช่องมองภาพตรงกลาง, Explorer ขวาบน, Properties ขวาล่าง">
+        <rect x="8" y="8" width="624" height="376" rx="14" fill="var(--surface-2)" stroke="var(--border-strong)"/>
+        <!-- toolbar -->
+        <rect x="24" y="22" width="592" height="34" rx="7" fill="var(--blue-wash)" stroke="var(--blue)"/>
+        <circle cx="44" cy="39" r="9" fill="var(--blue)"/>
+        <text x="62" y="44" font-size="12.5" fill="var(--ink)" font-family="var(--font-body)">แถบเครื่องมือ · Toolbar — ปุ่ม Part, Move, Play อยู่แถวนี้</text>
+        <!-- viewport -->
+        <rect x="24" y="68" width="404" height="300" rx="9" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <polygon points="70,320 382,320 330,232 122,232" fill="var(--green-wash)" stroke="var(--green)"/>
+        <rect x="214" y="196" width="46" height="46" rx="5" fill="var(--blue)" stroke="var(--blue-ink)"/>
+        <circle cx="46" cy="92" r="11" fill="var(--green)"/>
+        <text x="46" y="96" font-size="12" fill="#fff" text-anchor="middle" font-family="var(--font-body)">2</text>
+        <text x="66" y="96" font-size="12.5" fill="var(--ink)" font-family="var(--font-body)">ช่องมองภาพ · Viewport — โลก 3 มิติที่เราสร้างเกม</text>
+        <!-- explorer -->
+        <rect x="440" y="68" width="176" height="150" rx="9" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="452" y="88" font-size="11.5" fill="var(--ink-soft)" font-family="var(--font-mono)">▾ Workspace</text>
+        <text x="464" y="106" font-size="11.5" fill="var(--ink-soft)" font-family="var(--font-mono)">Baseplate</text>
+        <text x="464" y="124" font-size="11.5" fill="var(--ink-soft)" font-family="var(--font-mono)">SpawnLocation</text>
+        <circle cx="460" cy="150" r="11" fill="var(--yellow)"/>
+        <text x="460" y="154" font-size="12" fill="#3a2a04" text-anchor="middle" font-family="var(--font-body)">3</text>
+        <text x="440" y="180" font-size="12.5" fill="var(--ink)" font-family="var(--font-body)">Explorer</text>
+        <text x="440" y="197" font-size="10.5" fill="var(--ink-soft)" font-family="var(--font-body)">รายชื่อของทุกอย่างในเกม</text>
+        <!-- properties -->
+        <rect x="440" y="234" width="176" height="134" rx="9" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="452" y="254" font-size="11.5" fill="var(--ink-soft)" font-family="var(--font-mono)">Size   4, 1, 4</text>
+        <text x="452" y="272" font-size="11.5" fill="var(--ink-soft)" font-family="var(--font-mono)">Color  ■</text>
+        <text x="452" y="290" font-size="11.5" fill="var(--ink-soft)" font-family="var(--font-mono)">Anchored ☑</text>
+        <circle cx="460" cy="318" r="11" fill="var(--purple)"/>
+        <text x="460" y="322" font-size="12" fill="#fff" text-anchor="middle" font-family="var(--font-body)">4</text>
+        <text x="440" y="346" font-size="12.5" fill="var(--ink)" font-family="var(--font-body)">Properties</text>
+        <text x="440" y="363" font-size="10.5" fill="var(--ink-soft)" font-family="var(--font-body)">ตั้งค่าของก้อนที่เลือก</text>
+      </svg>
+      <figcaption><b>1</b> Toolbar ปุ่มคำสั่ง · <b>2</b> Viewport เวทีสร้างเกม · <b>3</b> Explorer สารบัญของทุกอย่าง · <b>4</b> Properties ช่องตั้งค่า — ถ้าหน้าต่างไหนหาย เปิดกลับที่เมนู <span class="ui">View</span></figcaption>
+    </figure>
+
+    <h3 style="margin-top:2rem">การบังคับกล้อง</h3>
+    <figure>
+      <svg viewBox="0 0 640 250" role="img" aria-label="แป้นบังคับกล้อง: W A S D เดิน, Q E ขึ้นลง, ลากเมาส์ปุ่มขวาหันกล้อง, ล้อกลางซูม, ปุ่ม F พุ่งไปหาก้อน">
+        <!-- keys -->
+        <g font-family="var(--font-display)" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="middle">
+          <rect x="120" y="40" width="42" height="42" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text x="141" y="67">W</text>
+          <rect x="72" y="92" width="42" height="42" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text x="93" y="119">A</text>
+          <rect x="120" y="92" width="42" height="42" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text x="141" y="119">S</text>
+          <rect x="168" y="92" width="42" height="42" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text x="189" y="119">D</text>
+          <rect x="24" y="40" width="42" height="42" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text x="45" y="67">Q</text>
+          <rect x="216" y="40" width="42" height="42" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text x="237" y="67">E</text>
+          <rect x="120" y="170" width="42" height="42" rx="8" fill="var(--yellow-wash)" stroke="var(--yellow)"/><text x="141" y="197">F</text>
+        </g>
+        <text x="141" y="30" font-size="12" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">เดินหน้า</text>
+        <text x="141" y="155" font-size="12" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ถอยหลัง · A/D = ซ้าย/ขวา</text>
+        <text x="45" y="100" font-size="12" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ลง</text>
+        <text x="237" y="100" font-size="12" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ขึ้น</text>
+        <text x="141" y="232" font-size="12" fill="var(--yellow-ink)" text-anchor="middle" font-family="var(--font-body)">เลือกก้อนแล้วกด F = กล้องพุ่งไปหา</text>
+        <!-- mouse -->
+        <rect x="410" y="52" width="96" height="150" rx="46" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <path d="M458 52 a46 46 0 0 1 48 46 v10 h-48 z" fill="var(--blue-wash)" stroke="var(--blue)"/>
+        <rect x="453" y="78" width="10" height="26" rx="5" fill="var(--ink-faint)"/>
+        <text x="536" y="92" font-size="12" fill="var(--blue-ink)" font-family="var(--font-body)">ลากปุ่มขวาค้าง</text>
+        <text x="536" y="108" font-size="12" fill="var(--ink-soft)" font-family="var(--font-body)">= หันกล้องมองรอบ ๆ</text>
+        <text x="536" y="150" font-size="12" fill="var(--ink-soft)" font-family="var(--font-body)">หมุนล้อกลาง = ซูมเข้า/ออก</text>
+        <line x1="470" y1="150" x2="524" y2="150" stroke="var(--ink-faint)" stroke-dasharray="3 3"/>
+      </svg>
+      <figcaption>กด <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ค้างเพื่อบิน · <kbd>Q</kbd>/<kbd>E</kbd> ขึ้น-ลง · <b>ลากเมาส์ปุ่มขวา</b> เพื่อหันกล้อง · <b>ล้อกลาง</b> ซูม · เลือกก้อนแล้วกด <kbd>F</kbd> ให้กล้องพุ่งไปหา</figcaption>
+    </figure>
+
+    <h3 style="margin-top:2rem">เครื่องมือจัดก้อน 3 อัน</h3>
+    <figure>
+      <svg viewBox="0 0 640 210" role="img" aria-label="สามเครื่องมือ: Move ลากลูกศรเพื่อย้าย, Scale ลากจุดมุมเพื่อปรับขนาด, Rotate ลากวงแหวนเพื่อหมุน">
+        <g>
+          <text x="107" y="26" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="middle" font-family="var(--font-display)">Move · ย้าย</text>
+          <rect x="82" y="70" width="50" height="50" rx="6" fill="var(--blue)" stroke="var(--blue-ink)"/>
+          <line x1="107" y1="70" x2="107" y2="38" stroke="var(--green)" stroke-width="3"/><polygon points="107,32 102,42 112,42" fill="var(--green)"/>
+          <line x1="132" y1="95" x2="168" y2="95" stroke="var(--red)" stroke-width="3"/><polygon points="174,95 164,90 164,100" fill="var(--red)"/>
+          <line x1="82" y1="120" x2="56" y2="146" stroke="var(--blue-ink)" stroke-width="3"/><polygon points="52,150 62,148 54,140" fill="var(--blue-ink)"/>
+          <text x="107" y="180" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ลากลูกศรสี</text>
+        </g>
+        <g>
+          <text x="320" y="26" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="middle" font-family="var(--font-display)">Scale · ปรับขนาด</text>
+          <rect x="295" y="70" width="50" height="50" rx="6" fill="var(--blue)" stroke="var(--blue-ink)"/>
+          <rect x="289" y="64" width="12" height="12" fill="var(--yellow)" stroke="var(--yellow-ink)"/>
+          <rect x="339" y="64" width="12" height="12" fill="var(--yellow)" stroke="var(--yellow-ink)"/>
+          <rect x="289" y="114" width="12" height="12" fill="var(--yellow)" stroke="var(--yellow-ink)"/>
+          <rect x="339" y="114" width="12" height="12" fill="var(--yellow)" stroke="var(--yellow-ink)"/>
+          <text x="320" y="180" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ลากจุดสี่เหลี่ยมที่มุม</text>
+        </g>
+        <g>
+          <text x="533" y="26" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="middle" font-family="var(--font-display)">Rotate · หมุน</text>
+          <rect x="508" y="70" width="50" height="50" rx="6" fill="var(--blue)" stroke="var(--blue-ink)"/>
+          <ellipse cx="533" cy="95" rx="42" ry="16" fill="none" stroke="var(--green)" stroke-width="3"/>
+          <ellipse cx="533" cy="95" rx="16" ry="42" fill="none" stroke="var(--red)" stroke-width="3"/>
+          <text x="533" y="180" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ลากวงแหวนสี</text>
+        </g>
+      </svg>
+      <figcaption>กดปุ่มบนแท็บ <span class="ui">Home</span> เพื่อสลับเครื่องมือ — <b>Move</b> ลากลูกศร · <b>Scale</b> ลากจุดมุม · <b>Rotate</b> ลากวงแหวน · เปิด <span class="ui">Snap to Grid = 1 stud</span> ที่แท็บ <span class="ui">Model</span> ก้อนจะต่อกันพอดีไม่มีร่อง</figcaption>
+    </figure>
+
+    <h3 style="margin-top:2rem">คำวิเศษ: Anchored</h3>
+    <figure>
+      <svg viewBox="0 0 520 240" role="img" aria-label="เปรียบเทียบก้อนไม่ Anchored ที่ร่วงตกพื้น กับก้อน Anchored ที่ลอยนิ่งอยู่กับที่">
+        <line x1="20" y1="200" x2="500" y2="200" stroke="var(--border-strong)" stroke-width="2"/>
+        <!-- not anchored -->
+        <rect x="70" y="150" width="60" height="46" rx="6" fill="var(--red-wash)" stroke="var(--red)"/>
+        <line x1="100" y1="60" x2="100" y2="140" stroke="var(--red)" stroke-width="2" stroke-dasharray="4 5"/>
+        <polygon points="100,150 92,136 108,136" fill="var(--red)"/>
+        <text x="100" y="48" font-size="13" fill="var(--red-ink)" text-anchor="middle" font-family="var(--font-display)" font-weight="700">❌ ไม่ Anchored</text>
+        <text x="100" y="224" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ร่วงตกตอนกด Play</text>
+        <!-- anchored -->
+        <rect x="360" y="96" width="60" height="46" rx="6" fill="var(--green-wash)" stroke="var(--green)"/>
+        <circle cx="390" cy="119" r="7" fill="none" stroke="var(--green-ink)" stroke-width="2"/>
+        <line x1="390" y1="119" x2="390" y2="140" stroke="var(--green-ink)" stroke-width="2"/>
+        <path d="M378 133 q12 14 24 0" fill="none" stroke="var(--green-ink)" stroke-width="2"/>
+        <text x="390" y="48" font-size="13" fill="var(--green-ink)" text-anchor="middle" font-family="var(--font-display)" font-weight="700">✓ Anchored</text>
+        <text x="390" y="176" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ลอยนิ่งอยู่กับที่</text>
+      </svg>
+      <figcaption>ทุกก้อนที่เป็นพื้น กำแพง หรือด่านให้ยืน <b>ต้องติ๊ก <span class="ui">Anchored</span> ใน Properties</b> ไม่งั้นก้อนจะร่วงหายตอนทดสอบเกม เลือกหลายก้อนพร้อมกันแล้วติ๊กทีเดียวได้</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= LESSON 1 ================= -->
+  <section id="l1" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">1</div>
+      <h3>เปิดโลก Roblox Studio<span class="en">Getting into Roblox Studio</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> บัญชีที่พร้อมใช้ และโปรเจกต์เกมเปล่า ๆ ที่เซฟไว้บนคลาวด์แล้ว 1 อัน</div>
+
+    <ol class="steps">
+      <li>
+        <p>เปิดโปรแกรม <b>Roblox Studio</b> (ไม่ใช่แอปที่ใช้เล่นเกม) แล้วล็อกอินด้วยบัญชีของฉัน</p>
+        <label class="done"><input type="checkbox"> ทำแล้ว</label>
+      </li>
+      <li>
+        <p>หน้าแรกเลือก <span class="ui">New</span> แล้วเลือกแม่แบบ <span class="ui">Baseplate</span> — จะได้พื้นเปล่ากับท้องฟ้า</p>
+        <label class="done"><input type="checkbox"> ทำแล้ว</label>
+      </li>
+      <li>
+        <p>เปิดหน้า <a href="#map">แผนที่หน้าจอ</a> มาเทียบ แล้วชี้ให้เพื่อนข้าง ๆ ดูว่า Toolbar, Viewport, Explorer, Properties อยู่ตรงไหนบนจอ</p>
+        <label class="done"><input type="checkbox"> ทำแล้ว</label>
+      </li>
+      <li>
+        <p>ฝึกกล้อง: กด <kbd>E</kbd> ค้างบินขึ้นสูง ๆ จนมองลงมาเห็นพื้นทั้งแผ่น แล้วคลิก Baseplate ใน Explorer กด <kbd>F</kbd> ให้กล้องพุ่งกลับมา</p>
+        <label class="done"><input type="checkbox"> ทำแล้ว</label>
+      </li>
+      <li>
+        <p>คลิก <span class="ui">Baseplate</span> ใน Explorer แล้วดูหน้าต่าง Properties ว่ามีค่าอะไรโผล่มาบ้าง (Size, Color, Material…)</p>
+        <label class="done"><input type="checkbox"> ทำแล้ว</label>
+      </li>
+      <li>
+        <p>เมนู <span class="ui">File ▸ Save to Roblox</span> ตั้งชื่อเกมว่า <b>"Obby ของ ______"</b> ใส่คำอธิบายสั้น ๆ แล้วกด Create</p>
+        <label class="done"><input type="checkbox"> ทำแล้ว</label>
+      </li>
+    </ol>
+
+    <div class="box note"><span class="h">💡 เกร็ดน่ารู้</span><p><span class="ui">Save to Roblox</span> คือการเซฟขึ้น "คลาวด์" ของ Roblox ไม่ใช่เซฟลงเครื่อง แปลว่าเปิดเครื่องไหนก็ทำงานต่อได้ และงานไม่หายถ้าเครื่องพัง</p></div>
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>ถ้าล็อกอินวนไม่เข้า ให้เปิดเว็บ <span class="ui">create.roblox.com</span> ล็อกอินที่นั่นก่อน แล้วค่อยกลับมาเปิด Studio · ถ้ายังไม่ได้ให้ยกมือเรียกครู</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ใน Properties ของ Baseplate เปลี่ยนช่อง <span class="ui">Color</span> เป็นสีที่ชอบ และเปลี่ยน <span class="ui">Material</span> จาก Plastic เป็นอย่างอื่น สังเกตพื้นเปลี่ยนยังไง แล้ว Save อีกครั้ง</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>วันนี้สิ่งที่ตื่นเต้นที่สุดคือ ________________________ · สิ่งที่ยังงงคือ ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 2 ================= -->
+  <section id="l2" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">2</div>
+      <h3>ก้อน Part และการต่อบล็อก<span class="en">Building with Parts</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> แท่นเริ่มต้นของเกม และสะพานหรือบันไดต่อจากแท่น 3–4 ก้อน</div>
+
+    <ol class="steps">
+      <li><p>เปิดโปรเจกต์ Obby ของฉันกลับมา: <span class="ui">File ▸ Open from Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ที่แท็บ <span class="ui">Model</span> เปิด <span class="ui">Snap to Grid</span> ตั้งเป็น <b>1 stud</b> — ก้อนจะต่อกันพอดีไม่มีร่อง</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>คลิก <span class="ui">Home ▸ Part</span> จะได้ก้อนสี่เหลี่ยม 1 ก้อนกลางจอ</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใน Properties ตั้ง <span class="ui">Size</span> = <b>12, 1, 12</b> ทำเป็นแท่นยืน · เลือก Color และ Material · <b>ติ๊ก <span class="ui">Anchored</span> ✓</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>กด <kbd>Ctrl</kbd>+<kbd>D</kbd> ทำสำเนาก้อน แล้วใช้เครื่องมือ <b>Move</b> ต่อเป็นบันไดหรือสะพาน 3–4 ก้อน — <b>ทุกก้อนต้อง Anchored</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ลากเมาส์คลุมเลือกทุกก้อน คลิกขวา ▸ <span class="ui">Group</span> (หรือ <kbd>Ctrl</kbd>+<kbd>G</kbd>) แล้วดับเบิลคลิกชื่อใน Explorer เปลี่ยนเป็น <b>StartArea</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>กดปุ่ม <span class="ui">Play</span> ▶ เดินตัวละครขึ้นบันได ทดสอบว่าขึ้นได้จริง แล้วกด <span class="ui">Stop</span> ⏹</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>ก้อนร่วงหาย หรือตัวละครตกทะลุพื้น = <b>ลืมติ๊ก Anchored</b> · หาก้อนที่เพิ่งสร้างไม่เจอ = คลิกชื่อมันใน Explorer แล้วกด <kbd>F</kbd> · เผลอ Scale จนก้อนบางเป็นกระดาษ = พิมพ์ค่า Size ตรง ๆ ใน Properties</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ทำ "ราวกันตก" สองข้างสะพาน โดยสร้างก้อนบาง ๆ ยาวเท่าสะพาน · หรือทำก้อนลอย 1 ก้อน (Anchored) ให้ต้องกระโดดข้าม 1 ช่อง</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ก้อนที่ทำยากที่สุดคือ ________________________ เพราะ ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 3 ================= -->
+  <section id="l3" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">3</div>
+      <h3>พื้นโลกและบรรยากาศ<span class="en">Terrain, sky &amp; mood</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> พื้นดิน ภูเขา น้ำ และท้องฟ้า ที่ทำให้เกมมี "ธีม" ชัดเจน</div>
+
+    <ol class="steps">
+      <li><p>เลือกธีมเกมของฉัน แล้วเขียนลงตรงนี้: <b>________________</b> &nbsp;(เกาะ / ถ้ำ / อวกาศ / หิมะ / ป่า)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เปิด <span class="ui">Terrain Editor</span> (แท็บ Editor หรือปุ่ม Terrain)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เครื่องมือ <span class="ui">Add</span> เลือกวัสดุ เช่น Grass แล้วลากในอากาศใต้ด่าน สร้างพื้นดินรองรับด่านทั้งหมด</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">Sculpt</span> ปั้นเนิน 1 ลูก · ถ้าเข้าธีม กด <span class="ui">Sea Level</span> ใส่น้ำทั้งฉาก</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">Paint</span> เปลี่ยนผิวอย่างน้อย 2 แบบ เช่น ทางเดินเป็น Sand ยอดเขาเป็น Rock</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใน Explorer คลิก <span class="ui">Lighting</span> → Properties ตั้ง <span class="ui">ClockTime</span> (<b>17</b> = เย็น, <b>2</b> = กลางคืน) และปรับ <span class="ui">Brightness</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>คลิกขวา <span class="ui">Lighting ▸ Insert Object ▸ Atmosphere</span> ปรับ <span class="ui">Density</span> ให้มีหมอกบาง ๆ</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>Terrain กลบงานก่อสร้าง = ใช้ <span class="ui">Erase</span> ค่อย ๆ เปิดออก หรือ <kbd>Ctrl</kbd>+<kbd>Z</kbd> · ฉากมืดจนมองไม่เห็น = ตั้ง ClockTime กลับเป็น 14 และเพิ่ม Brightness · เครื่องช้ามาก = ลดขนาด Brush ให้เล็กลง</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ปั้นภูเขาสูงไว้เป็นฉากหลัง 1 ลูก · หรือขุดถ้ำให้ด่านลอดผ่าน · หรือเปลี่ยน <span class="ui">Sky</span> ให้เป็นกลางคืนมีดาว</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>บรรยากาศที่ฉันอยากให้ผู้เล่นรู้สึกตอนเล่นเกมคือ ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 4 ================= -->
+  <section id="l4" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">4</div>
+      <h3>ทำให้เป็นเกม: เกิด – ตาย – ด่าน<span class="en">Spawn, kill bricks &amp; checkpoints</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> จุดเกิดของผู้เล่น · กับดักที่แตะแล้วตาย · จุดเซฟด่านที่ทำให้เกิดใหม่ตรงด่านล่าสุด</div>
+
+    <p>คาบนี้เริ่มใช้ <b>สคริปต์</b> แล้ว สคริปต์คือรายการคำสั่งที่คอมพิวเตอร์อ่านจากบนลงล่าง เรา <b>ไม่ต้องเขียนเอง</b> แค่คัดลอกจาก <a href="#scripts">หน้าสคริปต์</a> มาวางให้ถูกที่ ดูรูปว่าอะไรวางตรงไหน:</p>
+
+    <figure>
+      <svg viewBox="0 0 560 336" role="img" aria-label="ผัง Explorer แสดงตำแหน่งวางสคริปต์ A1 อยู่ข้างในก้อน LavaPart และสคริปต์ A2 อยู่ใน ServerScriptService โดยแป้นเซฟชื่อ 1 2 3 อยู่ในโฟลเดอร์ Checkpoints">
+        <g font-family="var(--font-mono)" font-size="13" fill="var(--ink)">
+          <text x="24" y="30">📁 Workspace</text>
+          <text x="52" y="58">StartArea</text>
+          <text x="52" y="82">SpawnLocation</text>
+          <rect x="46" y="94" width="150" height="24" rx="5" fill="var(--red-wash)" stroke="var(--red)"/>
+          <text x="52" y="111">LavaPart</text>
+          <rect x="76" y="122" width="130" height="24" rx="5" fill="var(--green-wash)" stroke="var(--green)"/>
+          <text x="82" y="139">📜 Script</text>
+          <text x="52" y="172">📁 Checkpoints</text>
+          <text x="82" y="196">1</text>
+          <text x="82" y="218">2</text>
+          <text x="82" y="240">3</text>
+          <text x="24" y="284">⚙️ ServerScriptService</text>
+          <rect x="46" y="296" width="130" height="24" rx="5" fill="var(--green-wash)" stroke="var(--green)"/>
+          <text x="52" y="313">📜 Script</text>
+        </g>
+        <g font-family="var(--font-body)" font-size="12.5">
+          <line x1="210" y1="134" x2="330" y2="134" stroke="var(--green)" stroke-dasharray="4 4"/>
+          <text x="336" y="130" fill="var(--green-ink)" font-weight="700">วางสคริปต์ A1</text>
+          <text x="336" y="147" fill="var(--ink-soft)">ไว้ "ข้างใน" ก้อนกับดัก</text>
+          <line x1="212" y1="228" x2="330" y2="228" stroke="var(--ink-faint)" stroke-dasharray="4 4"/>
+          <text x="336" y="224" fill="var(--ink)">แป้นเซฟ ตั้งชื่อเป็น</text>
+          <text x="336" y="241" fill="var(--ink-soft)">ตัวเลข 1, 2, 3 เรียงกัน</text>
+          <line x1="180" y1="308" x2="330" y2="308" stroke="var(--green)" stroke-dasharray="4 4"/>
+          <text x="336" y="304" fill="var(--green-ink)" font-weight="700">วางสคริปต์ A2</text>
+          <text x="336" y="321" fill="var(--ink-soft)">ไว้ใน ServerScriptService</text>
+        </g>
+      </svg>
+      <figcaption>สคริปต์ "กับดัก" อยู่ <b>ข้างในก้อน</b> ที่มันคุม · สคริปต์ "จุดเซฟด่าน" อยู่ใน <span class="ui">ServerScriptService</span> · แป้นเซฟทุกอันอยู่ในโฟลเดอร์ <span class="ui">Checkpoints</span> และตั้งชื่อเป็นตัวเลขล้วน</figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li><p><span class="ui">Home ▸ Spawn</span> วางบนแท่นเริ่ม · ติ๊ก <span class="ui">Anchored</span> · ถ้ามี SpawnLocation ซ้ำให้ลบให้เหลืออันเดียว</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>สร้าง Part ยาว ๆ เป็นพื้นช่วงอันตราย · ตั้งสี <b>แดง</b> · Material = <b>Neon</b> · เปลี่ยนชื่อใน Explorer เป็น <b>LavaPart</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใน Explorer ชี้ที่ <span class="ui">LavaPart</span> กดปุ่ม <span class="ui">➕</span> เลือก <span class="ui">Script</span> · ลบข้อความตัวอย่างทั้งหมด · วาง <a href="#scripts">สคริปต์ A1</a> · กด <kbd>Ctrl</kbd>+<kbd>S</kbd></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>กด <span class="ui">Play</span> ▶ เดินไปเหยียบ LavaPart → ตัวละครต้องตายและเกิดใหม่ที่ Spawn ✓</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ที่ <span class="ui">Workspace</span> กด <span class="ui">➕ ▸ Folder</span> ตั้งชื่อ <b>Checkpoints</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>สร้างแป้นเซฟแบน ๆ 3 อัน วางที่ต้นด่านแต่ละช่วง · ลากทั้ง 3 เข้าโฟลเดอร์ Checkpoints · เปลี่ยนชื่อเป็น <b>1</b>, <b>2</b>, <b>3</b> (อันแรก = จุดเริ่ม)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ที่ <span class="ui">ServerScriptService</span> กด <span class="ui">➕ ▸ Script</span> · วาง <a href="#scripts">สคริปต์ A2</a></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>กด <span class="ui">Play</span> ▶ เดินไปแตะแป้น 2 แล้วจงใจไปเหยียบลาวา → ต้องเกิดใหม่ที่แป้น 2 ไม่ใช่จุดเริ่ม ✓</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box note"><span class="h">💡 เกร็ดน่ารู้</span><p>คอมพิวเตอร์อ่านตัวพิมพ์ใหญ่กับพิมพ์เล็กไม่เหมือนกัน <code>Humanoid</code> กับ <code>humanoid</code> คนละคำ พิมพ์ผิดตัวเดียวสคริปต์ก็ไม่ทำงาน เพราะงั้นให้ <b>คัดลอกวาง</b> อย่าพิมพ์เอง</p></div>
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>เหยียบกับดักแล้วไม่ตาย = สคริปต์อยู่ผิดที่ (ต้องอยู่ <b>ข้างในก้อน</b>) · Checkpoint ไม่จำ = ชื่อแป้นไม่ใช่ตัวเลขล้วน หรือไม่ได้อยู่ในโฟลเดอร์ Checkpoints หรือสคริปต์ A2 ไม่ได้อยู่ใน ServerScriptService · เปิด <span class="ui">View ▸ Output</span> ไว้ดูข้อความสีแดง</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ทำกับดักแบบอื่น: ก้อนหนามโผล่จากพื้น · ช่องว่างให้ตกลงเหว (ทำก้อนกับดักบาง ๆ ไว้ก้นเหว) · กำแพงไฟที่ต้องวิ่งผ่านให้ทันจังหวะ</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ตอนสคริปต์ไม่ทำงาน ฉันหาสาเหตุและแก้ยังไง ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 5 ================= -->
+  <section id="l5" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">5</div>
+      <h3>ออกแบบด่าน Obby<span class="en">Designing a playable obby</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> ด่านต่อเนื่อง 5–8 ช่วง ที่เล่นจบได้จริง ยากขึ้นเรื่อย ๆ แต่ไม่ทำให้ผู้เล่นหงุดหงิด</div>
+
+    <figure>
+      <svg viewBox="0 0 640 240" role="img" aria-label="ภาพตัดข้างของด่าน Obby: แท่นเริ่ม ก้อนกระโดดไต่ขึ้น แป้นเซฟ ก้อนแคบ จุดพัก ช่องลาวา และแป้น FINISH สีทอง">
+        <line x1="16" y1="210" x2="624" y2="210" stroke="var(--border)"/>
+        <!-- start -->
+        <rect x="24" y="176" width="72" height="20" rx="4" fill="var(--green-wash)" stroke="var(--green)"/>
+        <text x="60" y="170" font-size="11" fill="var(--green-ink)" text-anchor="middle" font-family="var(--font-body)">เริ่ม</text>
+        <!-- stepping blocks up -->
+        <rect x="116" y="156" width="34" height="16" rx="3" fill="var(--blue)"/>
+        <rect x="164" y="132" width="34" height="16" rx="3" fill="var(--blue)"/>
+        <rect x="212" y="108" width="34" height="16" rx="3" fill="var(--blue)"/>
+        <text x="181" y="98" font-size="10.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">กระโดดไต่ขึ้น</text>
+        <!-- checkpoint flag -->
+        <rect x="262" y="92" width="40" height="16" rx="3" fill="var(--surface-3)" stroke="var(--border-strong)"/>
+        <line x1="272" y1="92" x2="272" y2="64" stroke="var(--ink-soft)" stroke-width="2"/>
+        <polygon points="272,64 292,70 272,76" fill="var(--yellow)"/>
+        <text x="282" y="58" font-size="10.5" fill="var(--yellow-ink)" text-anchor="middle" font-family="var(--font-body)">แป้นเซฟ</text>
+        <!-- narrow beam -->
+        <rect x="318" y="100" width="88" height="7" rx="3" fill="var(--purple)"/>
+        <text x="362" y="94" font-size="10.5" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ก้อนแคบ</text>
+        <!-- rest area -->
+        <rect x="420" y="112" width="92" height="18" rx="4" fill="var(--green-wash)" stroke="var(--green)"/>
+        <text x="466" y="106" font-size="10.5" fill="var(--green-ink)" text-anchor="middle" font-family="var(--font-body)">จุดพัก (พื้นกว้าง)</text>
+        <!-- lava gap -->
+        <rect x="524" y="150" width="40" height="10" rx="2" fill="var(--red)"/>
+        <text x="544" y="176" font-size="10.5" fill="var(--red-ink)" text-anchor="middle" font-family="var(--font-body)">ลาวา</text>
+        <!-- finish -->
+        <rect x="576" y="120" width="48" height="20" rx="4" fill="var(--yellow-wash)" stroke="var(--yellow)"/>
+        <line x1="586" y1="120" x2="586" y2="92" stroke="var(--ink-soft)" stroke-width="2"/>
+        <polygon points="586,92 606,98 586,104" fill="var(--yellow)"/>
+        <text x="600" y="86" font-size="10.5" fill="var(--yellow-ink)" text-anchor="middle" font-family="var(--font-body)">FINISH</text>
+      </svg>
+      <figcaption>ด่านที่ดีมีจังหวะ: <b>ช่วงยาก</b> (กระโดด, ก้อนแคบ, ลาวา) สลับกับ <b>จุดพัก</b> พื้นกว้าง ๆ และมี <b>แป้นเซฟก่อนช่วงยากทุกช่วง</b> ผู้เล่นจะได้ไม่ต้องเริ่มใหม่หมด</figcaption>
+    </figure>
+
+    <figure>
+      <svg viewBox="0 0 560 250" role="img" aria-label="กราฟเส้นความยากของด่าน: เริ่มต่ำ ค่อย ๆ ไต่ขึ้น มีจุดลดลงเป็นจุดพักหลังช่วงที่ยากที่สุด แล้วขึ้นไปสูงสุดที่ช่วงสุดท้าย">
+        <line x1="56" y1="24" x2="56" y2="200" stroke="var(--border-strong)"/>
+        <line x1="56" y1="200" x2="524" y2="200" stroke="var(--border-strong)"/>
+        <text x="20" y="115" font-size="12" fill="var(--ink-soft)" font-family="var(--font-body)" transform="rotate(-90 20 115)" text-anchor="middle">ความยาก</text>
+        <text x="290" y="230" font-size="12" fill="var(--ink-soft)" font-family="var(--font-body)" text-anchor="middle">ช่วงที่ 1 → 8</text>
+        <polyline points="80,184 138,168 196,140 254,150 312,104 370,132 428,72 490,40"
+                  fill="none" stroke="var(--blue)" stroke-width="3"/>
+        <g fill="var(--blue)"><circle cx="80" cy="184" r="4"/><circle cx="138" cy="168" r="4"/><circle cx="196" cy="140" r="4"/><circle cx="254" cy="150" r="4"/><circle cx="312" cy="104" r="4"/><circle cx="370" cy="132" r="4"/><circle cx="428" cy="72" r="4"/><circle cx="490" cy="40" r="4"/></g>
+        <text x="254" y="172" font-size="11" fill="var(--green-ink)" text-anchor="middle" font-family="var(--font-body)">จุดพัก</text>
+        <text x="370" y="154" font-size="11" fill="var(--green-ink)" text-anchor="middle" font-family="var(--font-body)">จุดพัก</text>
+        <text x="80" y="176" font-size="11" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-body)">ง่ายมาก</text>
+      </svg>
+      <figcaption>เส้นความยากควร <b>ค่อย ๆ ไต่ขึ้น</b> ไม่กระโดดพรวด และ <b>ดิ่งลงเป็นจุดพัก</b> หลังช่วงหิน ๆ ช่วงสุดท้ายยากที่สุดแล้วจบด้วยความรู้สึกว่า "เราทำได้!"</figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li><p>วาดแผนด่านบนกระดาษก่อน: ช่วงที่ 1 ถึง ___ และจดว่าแต่ละช่วง "ยากเรื่องอะไร"</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>สร้างด่านให้ครบอย่างน้อย <b>5 ช่วง</b> ต่อเนื่องจากแท่นเริ่ม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ช่วงแรก <b>ต้องง่ายมาก</b> ผ่านได้ในไม่กี่วินาที ให้ผู้เล่นรู้สึกว่า "ทำได้"</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เพิ่มความยาก <b>ทีละอย่าง</b> — ช่วงนี้ช่องกว้างขึ้น ช่วงหน้าค่อยเพิ่มก้อนแคบ อย่าใส่พร้อมกันหมด</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใส่ <b>จุดพัก</b> พื้นกว้าง ๆ ปลอดภัย อย่างน้อย 1 จุด หลังช่วงที่ยาก</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>วางแป้นเซฟก่อนทุกช่วงยาก ตั้งเลขเรียง <b>1 → n ไม่ซ้ำกัน</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใช้อุปสรรคอย่างน้อย <b>3 แบบต่างกัน</b> (กระโดดข้าม / เดินก้อนแคบ / ลอดใต้ / หลบกับดัก)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ทำแป้น <b>FINISH</b> สีทองใหญ่ ๆ ไว้ท้ายด่าน</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เดินทดสอบตั้งแต่ต้นจนจบ ให้ <b>ผ่านได้ทุกช่วงด้วยตัวเอง</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>ด่านยากจนตัวเองยังผ่านไม่ได้ = ลดระยะกระโดด เพิ่มขนาดก้อน · ด่านยาวแต่ราบเรียบน่าเบื่อ = สลับประเภทอุปสรรค · แป้นเซฟเลขซ้ำ = checkpoint จะสับสน ให้ไล่เลขใหม่</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>เพิ่มทางลับ (shortcut) ที่ยากมากแต่ข้ามได้ 2 ช่วง · หรือทำก้อนที่หายตอนเหยียบ โดยใส่ <a href="#scripts">สคริปต์ A5</a> ไว้ข้างในก้อน</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ช่วงที่ฉันคิดว่าสนุกที่สุดคือช่วง ______ เพราะ ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 6 ================= -->
+  <section id="l6" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">6</div>
+      <h3>คะแนน เหรียญ และของเก็บ<span class="en">Leaderboard, coins &amp; pickups</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> กระดานคะแนนมุมจอ และเหรียญที่เดินชนแล้วหาย พร้อมบวกแต้มให้ผู้เล่น</div>
+
+    <figure>
+      <svg viewBox="0 0 560 200" role="img" aria-label="ผู้เล่นเดินชนเหรียญทอง มีข้อความบวกหนึ่งลอยขึ้น และกล่องคะแนน Coins ที่มุมขวาบนของจอเพิ่มเลข">
+        <!-- screen frame -->
+        <rect x="16" y="16" width="528" height="168" rx="12" fill="var(--surface-2)" stroke="var(--border)"/>
+        <!-- leaderstats box -->
+        <rect x="430" y="30" width="98" height="34" rx="6" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="479" y="46" font-size="11" fill="var(--ink-soft)" text-anchor="middle" font-family="var(--font-mono)">Coins</text>
+        <text x="479" y="59" font-size="13" fill="var(--yellow-ink)" text-anchor="middle" font-family="var(--font-mono)" font-weight="600">3</text>
+        <text x="479" y="78" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle" font-family="var(--font-body)">มุมขวาบนของจอ</text>
+        <!-- player -->
+        <circle cx="150" cy="110" r="14" fill="var(--blue)"/>
+        <rect x="140" y="124" width="20" height="30" rx="4" fill="var(--blue-ink)"/>
+        <!-- coin -->
+        <ellipse cx="230" cy="128" rx="14" ry="16" fill="var(--yellow)" stroke="var(--yellow-ink)"/>
+        <text x="230" y="133" font-size="13" fill="var(--yellow-ink)" text-anchor="middle" font-family="var(--font-display)" font-weight="800">$</text>
+        <!-- +1 -->
+        <text x="230" y="96" font-size="15" fill="var(--green-ink)" text-anchor="middle" font-family="var(--font-display)" font-weight="800">+1</text>
+        <line x1="248" y1="120" x2="420" y2="58" stroke="var(--green)" stroke-dasharray="4 4"/>
+        <polygon points="420,58 408,60 414,69" fill="var(--green)"/>
+      </svg>
+      <figcaption>สคริปต์ <b>A3</b> สร้างกล่อง <span class="ui">Coins</span> ที่ Roblox โชว์มุมขวาบนให้เอง · สคริปต์ <b>A4</b> ในเหรียญแต่ละอันพูดว่า "ถ้ามีคนแตะ ให้บวกแต้ม แล้วลบตัวเองทิ้ง"</figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li><p>ที่ <span class="ui">ServerScriptService</span> กด <span class="ui">➕ ▸ Script</span> วาง <a href="#scripts">สคริปต์ A3</a> → กด Play เห็นกล่อง <b>Coins</b> มุมขวาบน</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ทำเหรียญต้นแบบ: Part ทรงกระบอกบาง ๆ สี<b>ทอง</b> Material <b>Neon</b> ตั้งชื่อ <b>Coin</b> · ติ๊ก <span class="ui">Anchored</span> ✓ · <b>ปิด <span class="ui">CanCollide</span> ✗</b> (เดินทะลุได้ ไม่สะดุด)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใส่ <span class="ui">Script</span> ไว้ <b>ข้างในเหรียญ</b> แล้ววาง <a href="#scripts">สคริปต์ A4</a></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>กด Play เดินชนเหรียญ 1 อัน → เลข Coins เพิ่มเป็น 1 และเหรียญหายไป ✓</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ทำสำเนาเหรียญ <b>(จากอันที่มีสคริปต์แล้ว)</b> ด้วย <kbd>Ctrl</kbd>+<kbd>D</kbd> วางกระจายตามด่านอย่างน้อย <b>8 อัน</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>วางเหรียญกลุ่มหนึ่งไว้ในที่ <b>เก็บยาก</b> (ต้องเสี่ยงกระโดดไปเอา) เป็นรางวัลของความกล้า</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>ไม่มีกล่องคะแนนโผล่ = สคริปต์ A3 ไม่ได้อยู่ใน ServerScriptService หรือคำว่า <code>leaderstats</code> พิมพ์ผิด · เก็บเหรียญแล้วไม่บวก = เหรียญที่ก๊อปมาไม่มีสคริปต์ (ต้องก๊อปจากอันที่ <b>มีสคริปต์แล้ว</b>) · เดินสะดุดเหรียญ = ยังเปิด CanCollide อยู่</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ใส่ <a href="#scripts">สคริปต์ A6</a> ให้เหรียญหมุนช้า ๆ · หรือทำ "เหรียญเพชร" สีฟ้าที่ให้ 5 แต้ม โดยแก้เลข <code>COIN_VALUE = 1</code> ในสคริปต์ A4 เป็น <code>5</code></p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ฉันวางเหรียญที่เก็บยากไว้ตรงไหน และทำไมถึงเลือกตรงนั้น ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 7 ================= -->
+  <section id="l7" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">7</div>
+      <h3>ตกแต่ง เสียง และเทสต์เกม<span class="en">Polish, sound &amp; playtesting</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะสร้าง:</b> เสียงและป้ายข้อความในเกม แล้วให้เพื่อนช่วยเทสต์ จดปัญหา และแก้ให้ได้อย่างน้อย 3 อย่าง</div>
+
+    <ol class="steps">
+      <li><p>ใส่เสียงบรรยากาศ: ใน Explorer เลือก <span class="ui">SoundService</span> กด <span class="ui">➕ ▸ Sound</span> → ในช่อง <span class="ui">SoundId</span> กดค้นเพลงที่ใช้ได้ฟรี → ติ๊ก <span class="ui">Looped</span> และ <span class="ui">Playing</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใส่ป้ายข้อความอย่างน้อย <b>3 ป้าย</b>: ใช้ <span class="ui">Toolbox</span> ค้นคำว่า "sign" เลือกโมเดลป้าย แล้วแก้ข้อความเป็น "START", "ระวังลาวา!", "FINISH"</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เก็บกวาด: ลบก้อนทดลองที่ไม่ใช้แล้ว · ตรวจให้แน่ใจว่าทุกก้อน <span class="ui">Anchored</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ให้เพื่อน 1 คนเล่นเกมของฉัน — <b>ฉันนั่งดูเงียบ ๆ ห้ามบอกทาง</b> จดทุกจุดที่เพื่อนติดลงตารางด้านล่าง</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ไปเล่นเกมเพื่อน แล้วให้ฟีดแบ็กแบบ <b>"ชม 2 อย่าง – เสนอปรับปรุง 1 อย่าง"</b> ด้วยคำพูดสุภาพ</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เลือก <b>3 อย่าง</b> ที่ผู้เล่นติดบ่อยที่สุด แล้วแก้ให้เสร็จในคาบนี้</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <figure style="padding:0;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:.9rem;min-width:460px">
+        <thead><tr>
+          <th style="text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--surface-2);font-family:var(--font-display)">#</th>
+          <th style="text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--surface-2);font-family:var(--font-display)">ผู้เล่นติดตรงไหน / เจอปัญหาอะไร</th>
+          <th style="text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--surface-2);font-family:var(--font-display)">แรง 1–3</th>
+          <th style="text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--surface-2);font-family:var(--font-display)">จะแก้ยังไง</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:.7rem .8rem;border-bottom:1px solid var(--border)">1</td><td style="border-bottom:1px solid var(--border)"></td><td style="border-bottom:1px solid var(--border)"></td><td style="border-bottom:1px solid var(--border)"></td></tr>
+          <tr><td style="padding:.7rem .8rem;border-bottom:1px solid var(--border)">2</td><td style="border-bottom:1px solid var(--border)"></td><td style="border-bottom:1px solid var(--border)"></td><td style="border-bottom:1px solid var(--border)"></td></tr>
+          <tr><td style="padding:.7rem .8rem;border-bottom:1px solid var(--border)">3</td><td style="border-bottom:1px solid var(--border)"></td><td style="border-bottom:1px solid var(--border)"></td><td style="border-bottom:1px solid var(--border)"></td></tr>
+          <tr><td style="padding:.7rem .8rem">4</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <figcaption>ตารางบันทึกบั๊ก (bug log) — ช่อง "แรง" คือความร้ายแรง 1 = เล็กน้อย, 3 = เล่นต่อไม่ได้ · แก้ตัวเลข 3 ก่อน</figcaption>
+    </figure>
+
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>เพลงไม่ดัง = ยังไม่ติ๊ก Playing หรือ SoundId ว่าง หรือเสียงนั้นใช้ไม่ได้ · อยากแก้ทุกอย่างพร้อมกัน = เลือกแค่ 3 อย่างที่คนติดบ่อยสุด · <b>Save ก่อนแก้ทุกครั้ง</b> จะได้ย้อนกลับได้ถ้าพัง</p></div>
+    <div class="box note"><span class="h">💡 เกร็ดน่ารู้</span><p>เจ้าของเกมห้ามบอกทางตอนเพื่อนเทสต์ เพราะเราอยากรู้ว่า "คนที่ไม่เคยเล่น" จะงงตรงไหน — ตรงที่เพื่อนงง คือตรงที่ต้องเพิ่มป้ายหรือทำให้ชัดขึ้น</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ฟีดแบ็กที่ทำให้ฉัน "อ๋อ!" ที่สุดคือ ________________________</p></div>
+  </section>
+
+  <!-- ================= LESSON 8 ================= -->
+  <section id="l8" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">8</div>
+      <h3>เผยแพร่เกมขึ้นเว็บ Roblox<span class="en">Publish &amp; go public</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะทำ:</b> ตั้งค่าเกม ใส่ไอคอนและภาพปก เปลี่ยนเกมเป็นสาธารณะ และได้ลิงก์เกมของตัวเองไปแชร์</div>
+
+    <figure>
+      <svg viewBox="0 0 640 150" role="img" aria-label="ลำดับการเผยแพร่ 5 ขั้น: Publish to Roblox, ตั้งชื่อและคำอธิบายใน Game Settings, ใส่ Icon กับ Thumbnail, ตั้งเป็น Public, ได้ลิงก์เกม">
+        <g font-family="var(--font-body)" font-size="11.5" text-anchor="middle">
+          <rect x="14" y="46" width="104" height="58" rx="9" fill="var(--surface)" stroke="var(--border-strong)"/>
+          <text x="66" y="70" fill="var(--ink)" font-weight="700" font-family="var(--font-display)">1</text>
+          <text x="66" y="88" fill="var(--ink-soft)">Publish</text>
+          <text x="66" y="102" fill="var(--ink-soft)">to Roblox</text>
+
+          <rect x="140" y="46" width="104" height="58" rx="9" fill="var(--surface)" stroke="var(--border-strong)"/>
+          <text x="192" y="70" fill="var(--ink)" font-weight="700" font-family="var(--font-display)">2</text>
+          <text x="192" y="88" fill="var(--ink-soft)">ชื่อ +</text>
+          <text x="192" y="102" fill="var(--ink-soft)">คำอธิบาย</text>
+
+          <rect x="266" y="46" width="104" height="58" rx="9" fill="var(--surface)" stroke="var(--border-strong)"/>
+          <text x="318" y="70" fill="var(--ink)" font-weight="700" font-family="var(--font-display)">3</text>
+          <text x="318" y="88" fill="var(--ink-soft)">Icon +</text>
+          <text x="318" y="102" fill="var(--ink-soft)">Thumbnail</text>
+
+          <rect x="392" y="46" width="104" height="58" rx="9" fill="var(--blue-wash)" stroke="var(--blue)"/>
+          <text x="444" y="70" fill="var(--blue-ink)" font-weight="700" font-family="var(--font-display)">4</text>
+          <text x="444" y="90" fill="var(--blue-ink)" font-weight="700">Public ✓</text>
+
+          <rect x="518" y="46" width="108" height="58" rx="9" fill="var(--green-wash)" stroke="var(--green)"/>
+          <text x="572" y="74" font-size="18" text-anchor="middle">🔗</text>
+          <text x="572" y="94" fill="var(--green-ink)" font-weight="700">ลิงก์เกม</text>
+        </g>
+        <g stroke="var(--ink-faint)">
+          <line x1="120" y1="75" x2="136" y2="75"/><polygon points="140,75 132,71 132,79" fill="var(--ink-faint)" stroke="none"/>
+          <line x1="246" y1="75" x2="262" y2="75"/><polygon points="266,75 258,71 258,79" fill="var(--ink-faint)" stroke="none"/>
+          <line x1="372" y1="75" x2="388" y2="75"/><polygon points="392,75 384,71 384,79" fill="var(--ink-faint)" stroke="none"/>
+          <line x1="498" y1="75" x2="514" y2="75"/><polygon points="518,75 510,71 510,79" fill="var(--ink-faint)" stroke="none"/>
+        </g>
+      </svg>
+      <figcaption>ขั้นที่ 2–4 อยู่ในหน้า <span class="ui">Home ▸ Game Settings</span> · ขั้นที่ 5 คัดลอกลิงก์จากเว็บ <span class="ui">create.roblox.com ▸ Creations</span></figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li><p>เตรียมรูป <b>ไอคอนเกม 1 รูป</b> (จับภาพหน้าจอเกมสวย ๆ ด้วย <kbd>PrtSc</kbd> / <kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>4</kbd> หรือวาดเอง — เป็นรูปจัตุรัส) และภาพปกกว้างอีก 1 รูป</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">File ▸ Publish to Roblox</span> เพื่ออัปเดตเกมเป็นเวอร์ชันล่าสุด</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">Home ▸ Game Settings ▸ Basic Info</span>: ตรวจชื่อเกมและคำอธิบาย (<b>⚠️ ห้ามมีข้อมูลส่วนตัว</b>) · เลือก Genre เป็น Obby หรือ Adventure</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p><span class="ui">Game Settings ▸ Places</span>: อัปโหลด <b>Icon</b> (รูปจัตุรัส) และ <b>Thumbnail</b> (รูปกว้าง)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ตั้งสถานะเกมเป็น <b>Public</b> แล้วกด Save · ถ้าปุ่มเป็นสีเทากดไม่ได้ ให้เลือก <b>Friends</b> ไปก่อน หรือขอครูช่วย</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เปิดเว็บ <span class="ui">create.roblox.com ▸ Creations</span> → คลิกเกมของฉัน → ปุ่ม <span class="ui">⋯ ▸ Copy Link</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เปิดลิงก์ในแท็บใหม่ ทดสอบว่าเล่นเกมผ่านเว็บได้จริง</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>วางลิงก์ในที่รวมงานของห้อง และเขียนลงหน้า <a href="#mygame">"เกมของฉัน"</a> ท้ายเล่ม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>เล่นเกมเพื่อนอย่างน้อย <b>3 เกม</b> กดถูกใจ และให้ฟีดแบ็กสุภาพ</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>กด Publish แล้วไม่ขึ้น = ยังไม่ล็อกอิน / เน็ตหลุด / ชื่อเกมว่าง · ตั้ง Public ไม่ได้ (ปุ่มเทา) = ต้องยืนยันอีเมลผู้ปกครองในบัญชีก่อน หรือใช้ Friends ไปก่อน · เพื่อนเปิดลิงก์แล้วเข้าไม่ได้ = รอ 2–3 นาทีให้ระบบประมวลผลหลังเผยแพร่ครั้งแรก</p></div>
+    <div class="box note"><span class="h">💡 "Public" แปลว่าอะไร</span><p>เกมของเราจะขึ้นบนเว็บ Roblox และ <b>ใครก็เข้ามาเล่นได้</b> เพราะงั้นเนื้อหาในเกมต้องเหมาะกับทุกวัย และต้องไม่มีข้อมูลส่วนตัวของเรา ถ้าอยากให้เฉพาะเพื่อนเล่น ให้ตั้งเป็น <b>Friends</b> แทน</p></div>
+    <div class="box reflect"><span class="h">✍️ บันทึกปิดคอร์ส</span><p>สิ่งที่ฉันภูมิใจที่สุดในเกมของฉันคือ ________________________<br>ถ้ามีเวลาอีก 1 คาบ ฉันจะเพิ่ม ________________________<br>ทักษะใหม่ที่ได้จากคอร์สนี้คือ ________________________</p></div>
+  </section>
+
+  <!-- ================= SCRIPTS ================= -->
+  <section id="scripts" class="block">
+    <div class="kicker">หน้าอ้างอิง · สคริปต์</div>
+    <h2 class="big">สคริปต์ที่ต้องใช้</h2>
+    <div class="box watch">
+      <span class="h">⚠️ อ่านก่อนใช้</span>
+      <p><b>คัดลอก–วาง ให้เป๊ะ อย่าพิมพ์เอง</b> · ตัวพิมพ์ใหญ่กับพิมพ์เล็กต้องตรงกันทุกตัว · วิธีใส่: ใน Explorer ชี้ที่ก้อน/บริการที่ระบุ → กด <span class="ui">➕</span> → เลือก <span class="ui">Script</span> → ลบข้อความตัวอย่างทั้งหมด → วางโค้ด → กด <kbd>Ctrl</kbd>+<kbd>S</kbd> · เปิด <span class="ui">View ▸ Output</span> ไว้ดูข้อความสีแดงเสมอ</p>
+    </div>
+
+    <p class="code-title">A1 · Kill Brick — วางไว้ "ข้างในก้อนกับดัก" (ใช้คาบ 4)</p>
+    <pre><code>local trap = script.Parent
+
+trap.Touched:Connect(function(hit)
+	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+	if humanoid then
+		humanoid.Health = 0
+	end
+end)</code></pre>
+
+    <p class="code-title">A2 · Checkpoints — วางใน ServerScriptService (ใช้คาบ 4)</p>
+    <pre><code>local Players = game:GetService("Players")
+local checkpoints = workspace:WaitForChild("Checkpoints")
+
+local function onCharacterAdded(character, player)
+	local stage = player:GetAttribute("Stage") or 1
+	local pad = checkpoints:FindFirstChild(tostring(stage))
+	if pad then
+		local root = character:WaitForChild("HumanoidRootPart")
+		task.wait(0.2)
+		root.CFrame = pad.CFrame + Vector3.new(0, 4, 0)
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	player:SetAttribute("Stage", 1)
+	player.CharacterAdded:Connect(function(character)
+		onCharacterAdded(character, player)
+	end)
+end)
+
+for _, pad in ipairs(checkpoints:GetChildren()) do
+	local stageNumber = tonumber(pad.Name)
+	if stageNumber then
+		pad.Touched:Connect(function(hit)
+			local player = Players:GetPlayerFromCharacter(hit.Parent)
+			if player then
+				local current = player:GetAttribute("Stage") or 1
+				if stageNumber &gt; current then
+					player:SetAttribute("Stage", stageNumber)
+				end
+			end
+		end)
+	end
+end</code></pre>
+
+    <p class="code-title">A3 · Leaderstats (กระดานคะแนน Coins) — วางใน ServerScriptService (ใช้คาบ 6)</p>
+    <pre><code>local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+	local stats = Instance.new("Folder")
+	stats.Name = "leaderstats"
+	stats.Parent = player
+
+	local coins = Instance.new("IntValue")
+	coins.Name = "Coins"
+	coins.Value = 0
+	coins.Parent = stats
+end)</code></pre>
+
+    <p class="code-title">A4 · Coin Pickup — วางไว้ "ข้างในเหรียญ" (ใช้คาบ 6)</p>
+    <pre><code>local coin = script.Parent
+local Players = game:GetService("Players")
+
+local COIN_VALUE = 1
+local collected = false
+
+coin.Touched:Connect(function(hit)
+	if collected then return end
+	local player = Players:GetPlayerFromCharacter(hit.Parent)
+	if not player then return end
+
+	local stats = player:FindFirstChild("leaderstats")
+	local coins = stats and stats:FindFirstChild("Coins")
+	if coins then
+		collected = true
+		coins.Value = coins.Value + COIN_VALUE
+		coin:Destroy()
+	end
+end)</code></pre>
+
+    <p class="code-title">A5 · Disappearing Block (ก้อนหายเมื่อเหยียบ) — วางไว้ "ข้างในก้อน" (ลองเอง คาบ 5)</p>
+    <pre><code>local block = script.Parent
+local RESET_TIME = 3
+local busy = false
+
+block.Touched:Connect(function(hit)
+	if busy then return end
+	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+	if not humanoid then return end
+
+	busy = true
+	task.wait(0.5)
+	block.Transparency = 0.6
+	block.CanCollide = false
+	task.wait(RESET_TIME)
+	block.Transparency = 0
+	block.CanCollide = true
+	busy = false
+end)</code></pre>
+
+    <p class="code-title">A6 · Spinning Coin (เหรียญหมุน) — วางไว้ "ข้างในเหรียญ" (ลองเอง คาบ 6)</p>
+    <pre><code>local RunService = game:GetService("RunService")
+local coin = script.Parent
+
+RunService.Heartbeat:Connect(function(deltaTime)
+	coin.CFrame = coin.CFrame * CFrame.Angles(0, math.rad(90) * deltaTime, 0)
+end)</code></pre>
+
+    <p class="code-title">A7 · Finish Line (เส้นชัยมีเสียง + บวก 10 แต้ม) — วางไว้ "ข้างในก้อน FINISH" (โบนัส)</p>
+    <pre><code>local finish = script.Parent
+local sound = finish:FindFirstChildWhichIsA("Sound")
+local Players = game:GetService("Players")
+local won = {}
+
+finish.Touched:Connect(function(hit)
+	local player = Players:GetPlayerFromCharacter(hit.Parent)
+	if not player or won[player] then return end
+	won[player] = true
+
+	if sound then
+		sound:Play()
+	end
+
+	local stats = player:FindFirstChild("leaderstats")
+	local coins = stats and stats:FindFirstChild("Coins")
+	if coins then
+		coins.Value = coins.Value + 10
+	end
+
+	task.wait(3)
+	won[player] = nil
+end)</code></pre>
+
+    <div class="box note">
+      <span class="h">💡 อ่านข้อความสีแดง (error) ยังไง</span>
+      <p>ถ้า Output ขึ้นเช่น <code>Workspace.LavaPart.Script:3: ...</code> เลข <b>:3</b> คือบรรทัดที่ 3 ของสคริปต์นั้น เปิดไปดูบรรทัดนั้นแล้วเทียบตัวอักษรกับต้นฉบับทีละตัว ส่วนใหญ่คือพิมพ์ชื่อผิด ตัวเล็ก-ใหญ่ไม่ตรง หรือลืมวงเล็บ</p>
+    </div>
+  </section>
+
+  <!-- ================= MY GAME ================= -->
+  <section id="mygame" class="block">
+    <div class="kicker">หน้าสุดท้าย</div>
+    <h2 class="big">เกมของฉัน</h2>
+    <div class="nameplate" style="max-width:none;line-height:2.6">
+      ชื่อเกม <span class="fill" style="min-width:16rem"></span><br>
+      ธีมของเกม <span class="fill" style="min-width:14rem"></span><br>
+      ด่านมีทั้งหมด <span class="fill" style="min-width:5rem"></span> ช่วง · เหรียญทั้งหมด <span class="fill" style="min-width:5rem"></span> เหรียญ<br>
+      ลิงก์เกม (roblox.com/games/…) <span class="fill" style="min-width:20rem"></span><br>
+      สิ่งที่เจ๋งที่สุดในเกมของฉัน <span class="fill" style="min-width:18rem"></span>
+    </div>
+
+    <div class="cert">
+      <div style="font-size:1.6rem">🏆</div>
+      <h3>เกียรติบัตรนักสร้างเกม</h3>
+      <p style="margin:.6rem 0 1rem;color:var(--ink-soft)">มอบให้เพื่อรับรองว่า</p>
+      <p style="font-size:1.2rem;font-family:var(--font-display);font-weight:700"><span class="fill"></span></p>
+      <p style="margin-top:1rem">ได้สร้างและเผยแพร่เกม Roblox ของตนเองสำเร็จ<br>ตั้งแต่หน้าจอเปล่า จนถึงเกมที่เล่นได้จริงบนเว็บ</p>
+      <p style="margin-top:1.4rem;color:var(--ink-soft);font-size:.9rem">ลงชื่อครูผู้สอน <span class="fill"></span> &nbsp; วันที่ <span class="fill" style="min-width:8rem"></span></p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p><b>สมุดนักสร้างเกม Roblox</b> — คู่มือนักเรียน ป.6 · ใช้คู่กับคู่มือครู 8 คาบ</p>
+  <p style="max-width:60ch;margin:.4rem auto 0">เอกสารเพื่อการศึกษา · "Roblox" เป็นเครื่องหมายการค้าของ Roblox Corporation เอกสารนี้ไม่ได้จัดทำหรือรับรองโดย Roblox Corporation · เมนูในโปรแกรมอาจเปลี่ยนหน้าตาได้ ให้เทียบกับหน้าจอจริงขณะเรียน</p>
+</footer>
