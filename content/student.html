@@ -458,7 +458,7 @@
     </div>
     <div class="build"><b>วันนี้เราจะสร้าง:</b> จุดเกิดของผู้เล่น · กับดักที่แตะแล้วตาย · จุดเซฟด่านที่ทำให้เกิดใหม่ตรงด่านล่าสุด</div>
 
-    <p>คาบนี้เริ่มใช้ <b>สคริปต์</b> แล้ว สคริปต์คือรายการคำสั่งที่คอมพิวเตอร์อ่านจากบนลงล่าง เรา <b>ไม่ต้องเขียนเอง</b> แค่คัดลอกจาก <a href="#scripts">หน้าสคริปต์</a> มาวางให้ถูกที่ ดูรูปว่าอะไรวางตรงไหน:</p>
+    <p>คาบนี้เริ่มใช้ <b>สคริปต์</b> แล้ว สคริปต์คือรายการคำสั่งที่คอมพิวเตอร์อ่านจากบนลงล่าง เรา <b>ไม่ต้องเขียนเอง</b> แค่คัดลอกโค้ดด้านล่างในคาบนี้มาวางให้ถูกที่ ดูรูปว่าอะไรวางตรงไหน:</p>
 
     <figure>
       <svg viewBox="0 0 560 336" role="img" aria-label="ผัง Explorer แสดงตำแหน่งวางสคริปต์ A1 อยู่ข้างในก้อน LavaPart และสคริปต์ A2 อยู่ใน ServerScriptService โดยแป้นเซฟชื่อ 1 2 3 อยู่ในโฟลเดอร์ Checkpoints">
@@ -496,17 +496,63 @@
     <ol class="steps">
       <li><p><span class="ui">Home ▸ Spawn</span> วางบนแท่นเริ่ม · ติ๊ก <span class="ui">Anchored</span> · ถ้ามี SpawnLocation ซ้ำให้ลบให้เหลืออันเดียว</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>สร้าง Part ยาว ๆ เป็นพื้นช่วงอันตราย · ตั้งสี <b>แดง</b> · Material = <b>Neon</b> · เปลี่ยนชื่อใน Explorer เป็น <b>LavaPart</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
-      <li><p>ใน Explorer ชี้ที่ <span class="ui">LavaPart</span> กดปุ่ม <span class="ui">➕</span> เลือก <span class="ui">Script</span> · ลบข้อความตัวอย่างทั้งหมด · วาง <a href="#scripts">สคริปต์ A1</a> · กด <kbd>Ctrl</kbd>+<kbd>S</kbd></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใน Explorer ชี้ที่ <span class="ui">LavaPart</span> กดปุ่ม <span class="ui">➕</span> เลือก <span class="ui">Script</span> · ลบข้อความตัวอย่างทั้งหมด · วางสคริปต์ A1 (ด้านล่าง) · กด <kbd>Ctrl</kbd>+<kbd>S</kbd></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>กด <span class="ui">Play</span> ▶ เดินไปเหยียบ LavaPart → ตัวละครต้องตายและเกิดใหม่ที่ Spawn ✓</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>ที่ <span class="ui">Workspace</span> กด <span class="ui">➕ ▸ Folder</span> ตั้งชื่อ <b>Checkpoints</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>สร้างแป้นเซฟแบน ๆ 3 อัน วางที่ต้นด่านแต่ละช่วง · ลากทั้ง 3 เข้าโฟลเดอร์ Checkpoints · เปลี่ยนชื่อเป็น <b>1</b>, <b>2</b>, <b>3</b> (อันแรก = จุดเริ่ม)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
-      <li><p>ที่ <span class="ui">ServerScriptService</span> กด <span class="ui">➕ ▸ Script</span> · วาง <a href="#scripts">สคริปต์ A2</a></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ที่ <span class="ui">ServerScriptService</span> กด <span class="ui">➕ ▸ Script</span> · วางสคริปต์ A2 (ด้านล่าง)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>กด <span class="ui">Play</span> ▶ เดินไปแตะแป้น 2 แล้วจงใจไปเหยียบลาวา → ต้องเกิดใหม่ที่แป้น 2 ไม่ใช่จุดเริ่ม ✓</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
     </ol>
 
+    <p class="code-title">A1 · Kill Brick — วางไว้ "ข้างในก้อนกับดัก"</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local trap = script.Parent
+
+trap.Touched:Connect(function(hit)
+	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+	if humanoid then
+		humanoid.Health = 0
+	end
+end)</code></pre></div>
+
+    <p class="code-title">A2 · Checkpoints — วางใน ServerScriptService</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local Players = game:GetService("Players")
+local checkpoints = workspace:WaitForChild("Checkpoints")
+
+local function onCharacterAdded(character, player)
+	local stage = player:GetAttribute("Stage") or 1
+	local pad = checkpoints:FindFirstChild(tostring(stage))
+	if pad then
+		local root = character:WaitForChild("HumanoidRootPart")
+		task.wait(0.2)
+		root.CFrame = pad.CFrame + Vector3.new(0, 4, 0)
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	player:SetAttribute("Stage", 1)
+	player.CharacterAdded:Connect(function(character)
+		onCharacterAdded(character, player)
+	end)
+end)
+
+for _, pad in ipairs(checkpoints:GetChildren()) do
+	local stageNumber = tonumber(pad.Name)
+	if stageNumber then
+		pad.Touched:Connect(function(hit)
+			local player = Players:GetPlayerFromCharacter(hit.Parent)
+			if player then
+				local current = player:GetAttribute("Stage") or 1
+				if stageNumber &gt; current then
+					player:SetAttribute("Stage", stageNumber)
+				end
+			end
+		end)
+	end
+end</code></pre></div>
+
     <div class="box note"><span class="h">💡 เกร็ดน่ารู้</span><p>คอมพิวเตอร์อ่านตัวพิมพ์ใหญ่กับพิมพ์เล็กไม่เหมือนกัน <code>Humanoid</code> กับ <code>humanoid</code> คนละคำ พิมพ์ผิดตัวเดียวสคริปต์ก็ไม่ทำงาน เพราะงั้นให้ <b>คัดลอกวาง</b> อย่าพิมพ์เอง</p></div>
-    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>เหยียบกับดักแล้วไม่ตาย = สคริปต์อยู่ผิดที่ (ต้องอยู่ <b>ข้างในก้อน</b>) · Checkpoint ไม่จำ = ชื่อแป้นไม่ใช่ตัวเลขล้วน หรือไม่ได้อยู่ในโฟลเดอร์ Checkpoints หรือสคริปต์ A2 ไม่ได้อยู่ใน ServerScriptService · เปิด <span class="ui">View ▸ Output</span> ไว้ดูข้อความสีแดง</p></div>
+    <div class="box watch"><span class="h">⚠️ ระวัง</span><p>เหยียบกับดักแล้วไม่ตาย = สคริปต์อยู่ผิดที่ (ต้องอยู่ <b>ข้างในก้อน</b>) · Checkpoint ไม่จำ = ชื่อแป้นไม่ใช่ตัวเลขล้วน หรือไม่ได้อยู่ในโฟลเดอร์ Checkpoints หรือสคริปต์ A2 ไม่ได้อยู่ใน ServerScriptService · เปิด <span class="ui">View ▸ Output</span> ไว้ดูข้อความสีแดง (ถ้าเจอเช่น <code>Script:3: ...</code> เลข <b>3</b> คือบรรทัดที่ผิด ให้เปิดไปเทียบกับต้นฉบับทีละตัว)</p></div>
     <div class="box try"><span class="h">🧩 ลองเอง</span><p>ทำกับดักแบบอื่น: ก้อนหนามโผล่จากพื้น · ช่องว่างให้ตกลงเหว (ทำก้อนกับดักบาง ๆ ไว้ก้นเหว) · กำแพงไฟที่ต้องวิ่งผ่านให้ทันจังหวะ</p></div>
     <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ตอนสคริปต์ไม่ทำงาน ฉันหาสาเหตุและแก้ยังไง ________________________</p></div>
   </section>
@@ -583,7 +629,28 @@
     </ol>
 
     <div class="box watch"><span class="h">⚠️ ระวัง</span><p>ด่านยากจนตัวเองยังผ่านไม่ได้ = ลดระยะกระโดด เพิ่มขนาดก้อน · ด่านยาวแต่ราบเรียบน่าเบื่อ = สลับประเภทอุปสรรค · แป้นเซฟเลขซ้ำ = checkpoint จะสับสน ให้ไล่เลขใหม่</p></div>
-    <div class="box try"><span class="h">🧩 ลองเอง</span><p>เพิ่มทางลับ (shortcut) ที่ยากมากแต่ข้ามได้ 2 ช่วง · หรือทำก้อนที่หายตอนเหยียบ โดยใส่ <a href="#scripts">สคริปต์ A5</a> ไว้ข้างในก้อน</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>เพิ่มทางลับ (shortcut) ที่ยากมากแต่ข้ามได้ 2 ช่วง · หรือทำก้อนที่หายตอนเหยียบ โดยใส่สคริปต์ A5 ด้านล่างไว้ข้างในก้อน</p></div>
+
+    <p class="code-title">A5 · Disappearing Block (ก้อนหายเมื่อเหยียบ) — วางไว้ "ข้างในก้อน" (ลองเอง)</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local block = script.Parent
+local RESET_TIME = 3
+local busy = false
+
+block.Touched:Connect(function(hit)
+	if busy then return end
+	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+	if not humanoid then return end
+
+	busy = true
+	task.wait(0.5)
+	block.Transparency = 0.6
+	block.CanCollide = false
+	task.wait(RESET_TIME)
+	block.Transparency = 0
+	block.CanCollide = true
+	busy = false
+end)</code></pre></div>
+
     <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ช่วงที่ฉันคิดว่าสนุกที่สุดคือช่วง ______ เพราะ ________________________</p></div>
   </section>
 
@@ -619,17 +686,61 @@
     </figure>
 
     <ol class="steps">
-      <li><p>ที่ <span class="ui">ServerScriptService</span> กด <span class="ui">➕ ▸ Script</span> วาง <a href="#scripts">สคริปต์ A3</a> → กด Play เห็นกล่อง <b>Coins</b> มุมขวาบน</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ที่ <span class="ui">ServerScriptService</span> กด <span class="ui">➕ ▸ Script</span> วางสคริปต์ A3 (ด้านล่าง) → กด Play เห็นกล่อง <b>Coins</b> มุมขวาบน</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>ทำเหรียญต้นแบบ: Part ทรงกระบอกบาง ๆ สี<b>ทอง</b> Material <b>Neon</b> ตั้งชื่อ <b>Coin</b> · ติ๊ก <span class="ui">Anchored</span> ✓ · <b>ปิด <span class="ui">CanCollide</span> ✗</b> (เดินทะลุได้ ไม่สะดุด)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
-      <li><p>ใส่ <span class="ui">Script</span> ไว้ <b>ข้างในเหรียญ</b> แล้ววาง <a href="#scripts">สคริปต์ A4</a></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ใส่ <span class="ui">Script</span> ไว้ <b>ข้างในเหรียญ</b> แล้ววางสคริปต์ A4 (ด้านล่าง)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>กด Play เดินชนเหรียญ 1 อัน → เลข Coins เพิ่มเป็น 1 และเหรียญหายไป ✓</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>ทำสำเนาเหรียญ <b>(จากอันที่มีสคริปต์แล้ว)</b> ด้วย <kbd>Ctrl</kbd>+<kbd>D</kbd> วางกระจายตามด่านอย่างน้อย <b>8 อัน</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>วางเหรียญกลุ่มหนึ่งไว้ในที่ <b>เก็บยาก</b> (ต้องเสี่ยงกระโดดไปเอา) เป็นรางวัลของความกล้า</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p><span class="ui">File ▸ Save to Roblox</span></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
     </ol>
 
+    <p class="code-title">A3 · Leaderstats (กระดานคะแนน Coins) — วางใน ServerScriptService</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+	local stats = Instance.new("Folder")
+	stats.Name = "leaderstats"
+	stats.Parent = player
+
+	local coins = Instance.new("IntValue")
+	coins.Name = "Coins"
+	coins.Value = 0
+	coins.Parent = stats
+end)</code></pre></div>
+
+    <p class="code-title">A4 · Coin Pickup — วางไว้ "ข้างในเหรียญ"</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local coin = script.Parent
+local Players = game:GetService("Players")
+
+local COIN_VALUE = 1
+local collected = false
+
+coin.Touched:Connect(function(hit)
+	if collected then return end
+	local player = Players:GetPlayerFromCharacter(hit.Parent)
+	if not player then return end
+
+	local stats = player:FindFirstChild("leaderstats")
+	local coins = stats and stats:FindFirstChild("Coins")
+	if coins then
+		collected = true
+		coins.Value = coins.Value + COIN_VALUE
+		coin:Destroy()
+	end
+end)</code></pre></div>
+
     <div class="box watch"><span class="h">⚠️ ระวัง</span><p>ไม่มีกล่องคะแนนโผล่ = สคริปต์ A3 ไม่ได้อยู่ใน ServerScriptService หรือคำว่า <code>leaderstats</code> พิมพ์ผิด · เก็บเหรียญแล้วไม่บวก = เหรียญที่ก๊อปมาไม่มีสคริปต์ (ต้องก๊อปจากอันที่ <b>มีสคริปต์แล้ว</b>) · เดินสะดุดเหรียญ = ยังเปิด CanCollide อยู่</p></div>
-    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ใส่ <a href="#scripts">สคริปต์ A6</a> ให้เหรียญหมุนช้า ๆ · หรือทำ "เหรียญเพชร" สีฟ้าที่ให้ 5 แต้ม โดยแก้เลข <code>COIN_VALUE = 1</code> ในสคริปต์ A4 เป็น <code>5</code></p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ใส่สคริปต์ A6 ด้านล่างให้เหรียญหมุนช้า ๆ · หรือทำ "เหรียญเพชร" สีฟ้าที่ให้ 5 แต้ม โดยแก้เลข <code>COIN_VALUE = 1</code> ในสคริปต์ A4 ด้านบนเป็น <code>5</code></p></div>
+
+    <p class="code-title">A6 · Spinning Coin (เหรียญหมุน) — วางไว้ "ข้างในเหรียญ" (ลองเอง)</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local RunService = game:GetService("RunService")
+local coin = script.Parent
+
+RunService.Heartbeat:Connect(function(deltaTime)
+	coin.CFrame = coin.CFrame * CFrame.Angles(0, math.rad(90) * deltaTime, 0)
+end)</code></pre></div>
+
     <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ฉันวางเหรียญที่เก็บยากไว้ตรงไหน และทำไมถึงเลือกตรงนั้น ________________________</p></div>
   </section>
 
@@ -671,6 +782,33 @@
 
     <div class="box watch"><span class="h">⚠️ ระวัง</span><p>เพลงไม่ดัง = ยังไม่ติ๊ก Playing หรือ SoundId ว่าง หรือเสียงนั้นใช้ไม่ได้ · อยากแก้ทุกอย่างพร้อมกัน = เลือกแค่ 3 อย่างที่คนติดบ่อยสุด · <b>Save ก่อนแก้ทุกครั้ง</b> จะได้ย้อนกลับได้ถ้าพัง</p></div>
     <div class="box note"><span class="h">💡 เกร็ดน่ารู้</span><p>เจ้าของเกมห้ามบอกทางตอนเพื่อนเทสต์ เพราะเราอยากรู้ว่า "คนที่ไม่เคยเล่น" จะงงตรงไหน — ตรงที่เพื่อนงง คือตรงที่ต้องเพิ่มป้ายหรือทำให้ชัดขึ้น</p></div>
+    <div class="box try"><span class="h">🧩 ลองเอง</span><p>ให้แป้น FINISH เล่นเสียงและบวก 10 แต้มตอนแตะ: ใส่ <span class="ui">Sound</span> ไว้ในก้อน FINISH แล้ววางสคริปต์ A7 ด้านล่างไว้ข้างในก้อนเดียวกัน</p></div>
+
+    <p class="code-title">A7 · Finish Line (เส้นชัยมีเสียง + บวก 10 แต้ม) — วางไว้ "ข้างในก้อน FINISH" (ลองเอง)</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local finish = script.Parent
+local sound = finish:FindFirstChildWhichIsA("Sound")
+local Players = game:GetService("Players")
+local won = {}
+
+finish.Touched:Connect(function(hit)
+	local player = Players:GetPlayerFromCharacter(hit.Parent)
+	if not player or won[player] then return end
+	won[player] = true
+
+	if sound then
+		sound:Play()
+	end
+
+	local stats = player:FindFirstChild("leaderstats")
+	local coins = stats and stats:FindFirstChild("Coins")
+	if coins then
+		coins.Value = coins.Value + 10
+	end
+
+	task.wait(3)
+	won[player] = nil
+end)</code></pre></div>
+
     <div class="box reflect"><span class="h">✍️ บันทึกท้ายคาบ</span><p>ฟีดแบ็กที่ทำให้ฉัน "อ๋อ!" ที่สุดคือ ________________________</p></div>
   </section>
 
@@ -791,169 +929,11 @@
       <li><p>ชี้ที่ <span class="ui">Background</span> → <span class="ui">➕ ▸ Frame</span> → ตั้งชื่อ <b>Bar</b> (นี่คือ "ราง" ของแถบ) → ตั้ง <span class="ui">Size</span> เป็นแถบยาวบาง ๆ เช่น <code>{0.5,0},{0,24}</code> วางกึ่งกลางจอ → สีเทาเข้ม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>ชี้ที่ <span class="ui">Bar</span> → <span class="ui">➕ ▸ Frame</span> → ตั้งชื่อ <b>Fill</b> (ส่วนที่จะ "วิ่ง") → ตั้ง <span class="ui">Size</span> เริ่มต้นเป็น <code>{0,0},{1,0}</code> → เลือกสีสว่างหรือสีธีมเกม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>ชี้ที่ <span class="ui">Background</span> → <span class="ui">➕ ▸ TextLabel</span> → ตั้งชื่อ <b>Percent</b> → ลบข้อความตัวอย่าง พิมพ์ <code>0%</code> → ตั้ง <span class="ui">BackgroundTransparency</span> = 1 (โปร่งใส) วางไว้ใต้แถบ</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
-      <li><p>ชี้ที่ <span class="ui">LoadingScreen</span> → <span class="ui">➕ ▸ LocalScript</span> → ลบข้อความตัวอย่าง → วางสคริปต์ <b>A8 · Custom Loading Screen</b> จากคลังสคริปต์ท้ายเล่ม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ชี้ที่ <span class="ui">LoadingScreen</span> → <span class="ui">➕ ▸ LocalScript</span> → ลบข้อความตัวอย่าง → วางสคริปต์ <b>A8 · Custom Loading Screen</b> ด้านล่าง</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
       <li><p>กด <kbd>Ctrl</kbd>+<kbd>S</kbd> แล้วกด <span class="ui">Play</span> ทดสอบดู — ถ้าเกมโหลดเร็วเกินจนมองแถบไม่ทัน ให้ลองกด Publish แล้วเข้าเล่นผ่านเว็บจริงแทน จะเห็นแถบวิ่งชัดกว่า</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
     </ol>
 
-    <div class="box try">
-      <span class="h">🧩 ลองเอง</span>
-      <p>1) เปลี่ยนสี <b>Fill</b> ให้เข้ากับธีมเกมของตัวเอง หรือทำให้เป็นไล่สี (Gradient) ด้วย <span class="ui">UIGradient</span><br>
-      2) ใส่ <span class="ui">UICorner</span> ให้ <b>Bar</b> และ <b>Fill</b> เพื่อให้ขอบโค้งมนสวยขึ้น<br>
-      3) เพิ่ม TextLabel อีกอันบอกชื่อเกมหรือคำแนะนำการเล่น เช่น "กด Space เพื่อกระโดด"</p>
-    </div>
-
-    <div class="box watch">
-      <span class="h">⚠️ ระวัง</span>
-      <p>สคริปต์ต้องเป็น <b>LocalScript</b> ไม่ใช่ Script ธรรมดา (เพราะหน้าจอเป็นเรื่องของแต่ละเครื่องผู้เล่น) · ต้องวางไว้ใน <b>ReplicatedFirst</b> เท่านั้น ถ้าวางที่อื่นจะโผล่ช้าเกินไปจนมองไม่ทันตอนโหลด · ถ้าจอค้างที่ 0% ตลอด ให้เช็กว่าพิมพ์ชื่อ Background/Bar/Fill/Percent ตรงกับในสคริปต์ทุกตัวอักษร</p>
-    </div>
-
-    <p><b>สะท้อนความคิด ✍️</b> — หน้าจอโหลดของฉันมีสีธีมว่า ______ · ส่วนที่ยากที่สุดของภารกิจนี้คือ ______</p>
-  </section>
-
-  <!-- ================= SCRIPTS ================= -->
-  <section id="scripts" class="block">
-    <div class="kicker">หน้าอ้างอิง · สคริปต์</div>
-    <h2 class="big">สคริปต์ที่ต้องใช้</h2>
-    <div class="box watch">
-      <span class="h">⚠️ อ่านก่อนใช้</span>
-      <p><b>คัดลอก–วาง ให้เป๊ะ อย่าพิมพ์เอง</b> · ตัวพิมพ์ใหญ่กับพิมพ์เล็กต้องตรงกันทุกตัว · วิธีใส่: ใน Explorer ชี้ที่ก้อน/บริการที่ระบุ → กด <span class="ui">➕</span> → เลือก <span class="ui">Script</span> → ลบข้อความตัวอย่างทั้งหมด → วางโค้ด → กด <kbd>Ctrl</kbd>+<kbd>S</kbd> · เปิด <span class="ui">View ▸ Output</span> ไว้ดูข้อความสีแดงเสมอ</p>
-    </div>
-
-    <p class="code-title">A1 · Kill Brick — วางไว้ "ข้างในก้อนกับดัก" (ใช้คาบ 4)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local trap = script.Parent
-
-trap.Touched:Connect(function(hit)
-	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
-	if humanoid then
-		humanoid.Health = 0
-	end
-end)</code></pre></div>
-
-    <p class="code-title">A2 · Checkpoints — วางใน ServerScriptService (ใช้คาบ 4)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local Players = game:GetService("Players")
-local checkpoints = workspace:WaitForChild("Checkpoints")
-
-local function onCharacterAdded(character, player)
-	local stage = player:GetAttribute("Stage") or 1
-	local pad = checkpoints:FindFirstChild(tostring(stage))
-	if pad then
-		local root = character:WaitForChild("HumanoidRootPart")
-		task.wait(0.2)
-		root.CFrame = pad.CFrame + Vector3.new(0, 4, 0)
-	end
-end
-
-Players.PlayerAdded:Connect(function(player)
-	player:SetAttribute("Stage", 1)
-	player.CharacterAdded:Connect(function(character)
-		onCharacterAdded(character, player)
-	end)
-end)
-
-for _, pad in ipairs(checkpoints:GetChildren()) do
-	local stageNumber = tonumber(pad.Name)
-	if stageNumber then
-		pad.Touched:Connect(function(hit)
-			local player = Players:GetPlayerFromCharacter(hit.Parent)
-			if player then
-				local current = player:GetAttribute("Stage") or 1
-				if stageNumber &gt; current then
-					player:SetAttribute("Stage", stageNumber)
-				end
-			end
-		end)
-	end
-end</code></pre></div>
-
-    <p class="code-title">A3 · Leaderstats (กระดานคะแนน Coins) — วางใน ServerScriptService (ใช้คาบ 6)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local Players = game:GetService("Players")
-
-Players.PlayerAdded:Connect(function(player)
-	local stats = Instance.new("Folder")
-	stats.Name = "leaderstats"
-	stats.Parent = player
-
-	local coins = Instance.new("IntValue")
-	coins.Name = "Coins"
-	coins.Value = 0
-	coins.Parent = stats
-end)</code></pre></div>
-
-    <p class="code-title">A4 · Coin Pickup — วางไว้ "ข้างในเหรียญ" (ใช้คาบ 6)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local coin = script.Parent
-local Players = game:GetService("Players")
-
-local COIN_VALUE = 1
-local collected = false
-
-coin.Touched:Connect(function(hit)
-	if collected then return end
-	local player = Players:GetPlayerFromCharacter(hit.Parent)
-	if not player then return end
-
-	local stats = player:FindFirstChild("leaderstats")
-	local coins = stats and stats:FindFirstChild("Coins")
-	if coins then
-		collected = true
-		coins.Value = coins.Value + COIN_VALUE
-		coin:Destroy()
-	end
-end)</code></pre></div>
-
-    <p class="code-title">A5 · Disappearing Block (ก้อนหายเมื่อเหยียบ) — วางไว้ "ข้างในก้อน" (ลองเอง คาบ 5)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local block = script.Parent
-local RESET_TIME = 3
-local busy = false
-
-block.Touched:Connect(function(hit)
-	if busy then return end
-	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
-	if not humanoid then return end
-
-	busy = true
-	task.wait(0.5)
-	block.Transparency = 0.6
-	block.CanCollide = false
-	task.wait(RESET_TIME)
-	block.Transparency = 0
-	block.CanCollide = true
-	busy = false
-end)</code></pre></div>
-
-    <p class="code-title">A6 · Spinning Coin (เหรียญหมุน) — วางไว้ "ข้างในเหรียญ" (ลองเอง คาบ 6)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local RunService = game:GetService("RunService")
-local coin = script.Parent
-
-RunService.Heartbeat:Connect(function(deltaTime)
-	coin.CFrame = coin.CFrame * CFrame.Angles(0, math.rad(90) * deltaTime, 0)
-end)</code></pre></div>
-
-    <p class="code-title">A7 · Finish Line (เส้นชัยมีเสียง + บวก 10 แต้ม) — วางไว้ "ข้างในก้อน FINISH" (โบนัส)</p>
-    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local finish = script.Parent
-local sound = finish:FindFirstChildWhichIsA("Sound")
-local Players = game:GetService("Players")
-local won = {}
-
-finish.Touched:Connect(function(hit)
-	local player = Players:GetPlayerFromCharacter(hit.Parent)
-	if not player or won[player] then return end
-	won[player] = true
-
-	if sound then
-		sound:Play()
-	end
-
-	local stats = player:FindFirstChild("leaderstats")
-	local coins = stats and stats:FindFirstChild("Coins")
-	if coins then
-		coins.Value = coins.Value + 10
-	end
-
-	task.wait(3)
-	won[player] = nil
-end)</code></pre></div>
-
-    <p class="code-title">A8 · Custom Loading Screen — วางเป็น "LocalScript ข้างใน ScreenGui LoadingScreen" ที่ ReplicatedFirst (ภารกิจพิเศษ)</p>
+    <p class="code-title">A8 · Custom Loading Screen — วางเป็น "LocalScript ข้างใน ScreenGui LoadingScreen" ที่ ReplicatedFirst</p>
     <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ContentProvider = game:GetService("ContentProvider")
 
@@ -993,10 +973,19 @@ for i = 1, 10 do
 end
 screenGui:Destroy()</code></pre></div>
 
-    <div class="box note">
-      <span class="h">💡 อ่านข้อความสีแดง (error) ยังไง</span>
-      <p>ถ้า Output ขึ้นเช่น <code>Workspace.LavaPart.Script:3: ...</code> เลข <b>:3</b> คือบรรทัดที่ 3 ของสคริปต์นั้น เปิดไปดูบรรทัดนั้นแล้วเทียบตัวอักษรกับต้นฉบับทีละตัว ส่วนใหญ่คือพิมพ์ชื่อผิด ตัวเล็ก-ใหญ่ไม่ตรง หรือลืมวงเล็บ</p>
+    <div class="box try">
+      <span class="h">🧩 ลองเอง</span>
+      <p>1) เปลี่ยนสี <b>Fill</b> ให้เข้ากับธีมเกมของตัวเอง หรือทำให้เป็นไล่สี (Gradient) ด้วย <span class="ui">UIGradient</span><br>
+      2) ใส่ <span class="ui">UICorner</span> ให้ <b>Bar</b> และ <b>Fill</b> เพื่อให้ขอบโค้งมนสวยขึ้น<br>
+      3) เพิ่ม TextLabel อีกอันบอกชื่อเกมหรือคำแนะนำการเล่น เช่น "กด Space เพื่อกระโดด"</p>
     </div>
+
+    <div class="box watch">
+      <span class="h">⚠️ ระวัง</span>
+      <p>สคริปต์ต้องเป็น <b>LocalScript</b> ไม่ใช่ Script ธรรมดา (เพราะหน้าจอเป็นเรื่องของแต่ละเครื่องผู้เล่น) · ต้องวางไว้ใน <b>ReplicatedFirst</b> เท่านั้น ถ้าวางที่อื่นจะโผล่ช้าเกินไปจนมองไม่ทันตอนโหลด · ถ้าจอค้างที่ 0% ตลอด ให้เช็กว่าพิมพ์ชื่อ Background/Bar/Fill/Percent ตรงกับในสคริปต์ทุกตัวอักษร</p>
+    </div>
+
+    <p><b>สะท้อนความคิด ✍️</b> — หน้าจอโหลดของฉันมีสีธีมว่า ______ · ส่วนที่ยากที่สุดของภารกิจนี้คือ ______</p>
   </section>
 
   <!-- ================= MY GAME ================= -->
