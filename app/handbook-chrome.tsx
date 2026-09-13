@@ -4,9 +4,10 @@ import { useEffect } from "react";
 
 /**
  * Wires up the interactive bits that live inside the injected handbook markup:
- * the theme toggle (#themeBtn), the print button (#printBtn) and the table-of-
- * contents scrollspy (.toc a). The markup is rendered via dangerouslySetInnerHTML
- * so its original inline <script> never runs — this component replaces it.
+ * the theme toggle (#themeBtn), the print button (#printBtn), the table-of-
+ * contents scrollspy (.toc a), and the per-script copy buttons (.copy-btn).
+ * The markup is rendered via dangerouslySetInnerHTML so its original inline
+ * <script> never runs — this component replaces it.
  */
 export default function HandbookChrome({ storageKey }: { storageKey: string }) {
   useEffect(() => {
@@ -70,10 +71,55 @@ export default function HandbookChrome({ storageKey }: { storageKey: string }) {
       }
     }
 
+    const copyCleanups: Array<() => void> = [];
+    const copyButtons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(".copy-btn"),
+    );
+    for (const btn of copyButtons) {
+      const codeEl = btn.parentElement?.querySelector("pre code");
+      if (!codeEl) continue;
+      const defaultLabel = btn.textContent ?? "";
+      let resetTimer: ReturnType<typeof setTimeout> | undefined;
+
+      const onCopy = async () => {
+        const text = codeEl.textContent ?? "";
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand("copy");
+          } catch {
+            /* clipboard unavailable — nothing more we can do */
+          }
+          document.body.removeChild(textarea);
+        }
+        btn.classList.add("copied");
+        btn.textContent = "✓ คัดลอกแล้ว";
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          btn.classList.remove("copied");
+          btn.textContent = defaultLabel;
+        }, 1800);
+      };
+
+      btn.addEventListener("click", onCopy);
+      copyCleanups.push(() => {
+        btn.removeEventListener("click", onCopy);
+        clearTimeout(resetTimer);
+      });
+    }
+
     return () => {
       themeBtn?.removeEventListener("click", onTheme);
       printBtn?.removeEventListener("click", onPrint);
       observer?.disconnect();
+      for (const cleanup of copyCleanups) cleanup();
     };
   }, [storageKey]);
 

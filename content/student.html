@@ -162,6 +162,19 @@
   pre code{white-space:pre}
   .code-title{font-family:var(--font-display);font-weight:700;font-size:.9rem;color:var(--green-ink);margin:1.6rem 0 -.3rem}
 
+  .code-block{position:relative;margin:1rem 0}
+  .code-block pre{margin:0;padding-top:2.6rem}
+  .copy-btn{
+    position:absolute;top:.6rem;right:.6rem;z-index:1;
+    font-family:var(--font-body);font-size:.78rem;font-weight:700;color:var(--green-ink);
+    background:var(--surface);border:1px solid color-mix(in srgb,var(--green) 40%,transparent);
+    border-radius:9px;padding:.34rem .7rem;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;
+    transition:background .15s,color .15s,border-color .15s
+  }
+  .copy-btn:hover{background:var(--green-wash);border-color:var(--green)}
+  .copy-btn.copied{background:var(--green);color:#fff;border-color:var(--green)}
+  @media print{.copy-btn{display:none!important}}
+
   .cert{
     border:3px double var(--border-strong);border-radius:16px;padding:1.8rem;text-align:center;background:var(--surface);
     margin:1.6rem 0
@@ -722,6 +735,81 @@
     <div class="box reflect"><span class="h">✍️ บันทึกปิดคอร์ส</span><p>สิ่งที่ฉันภูมิใจที่สุดในเกมของฉันคือ ________________________<br>ถ้ามีเวลาอีก 1 คาบ ฉันจะเพิ่ม ________________________<br>ทักษะใหม่ที่ได้จากคอร์สนี้คือ ________________________</p></div>
   </section>
 
+  <!-- ================= LESSON 9 (BONUS) ================= -->
+  <section id="l9" class="lesson">
+    <div class="lesson-tab">
+      <div class="num">★</div>
+      <h3>หน้าจอโหลดเกมแบบกำหนดเอง<span class="en">Custom Loading Screen (ภารกิจพิเศษ)</span></h3>
+    </div>
+    <div class="build"><b>วันนี้เราจะทำ:</b> ปิดหน้าจอโหลดแบบเดิมของ Roblox แล้วสร้างหน้าจอโหลดของตัวเอง มีแถบความคืบหน้า (progress bar) กับตัวเลข % ที่ค่อย ๆ วิ่งจนครบ แล้วจางหายเข้าสู่เกม</div>
+
+    <div class="box note">
+      <span class="h">💡 ทำไมต้องมีหน้าจอโหลด</span>
+      <p>ปกติตอนเปิดเกม Roblox จะโชว์วงกลมหมุน ๆ ให้เองอัตโนมัติ แต่ถ้าอยากให้เกมมีสไตล์ของตัวเอง เช่น ใส่โลโก้ ใส่แถบเปอร์เซ็นต์ หรือใส่คำแนะนำการเล่นระหว่างรอ เราต้อง <b>ปิดของเดิมแล้วสร้างใหม่เอง</b></p>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 640 210" role="img" aria-label="เปรียบเทียบหน้าจอโหลดเริ่มต้นของ Roblox ที่มีวงกลมหมุน กับหน้าจอโหลดแบบกำหนดเองที่มีแถบและเปอร์เซ็นต์">
+        <rect x="14" y="20" width="280" height="170" rx="14" fill="#12141c" stroke="var(--border-strong)"/>
+        <text x="154" y="44" font-size="12.5" fill="#8a93a6" text-anchor="middle" font-family="var(--font-display)" font-weight="700">ค่าเริ่มต้นของ Roblox</text>
+        <circle cx="154" cy="105" r="22" fill="none" stroke="#3a4150" stroke-width="6"/>
+        <path d="M154 83 a22 22 0 0 1 22 22" fill="none" stroke="var(--blue)" stroke-width="6" stroke-linecap="round"/>
+        <text x="154" y="155" font-size="11.5" fill="#8a93a6" text-anchor="middle" font-family="var(--font-body)">กำลังโหลด…</text>
+
+        <rect x="346" y="20" width="280" height="170" rx="14" fill="#12141c" stroke="var(--green)"/>
+        <text x="486" y="44" font-size="12.5" fill="var(--green)" text-anchor="middle" font-family="var(--font-display)" font-weight="700">แบบกำหนดเอง (ของเรา)</text>
+        <text x="486" y="80" font-size="16" text-anchor="middle" font-family="var(--font-display)" fill="#fff" font-weight="700">🎮 เกมของฉัน</text>
+        <rect x="386" y="100" width="200" height="14" rx="7" fill="#2a3140"/>
+        <rect x="386" y="100" width="130" height="14" rx="7" fill="var(--green)"/>
+        <text x="486" y="132" font-size="13" fill="#fff" text-anchor="middle" font-family="var(--font-mono)">65%</text>
+        <text x="486" y="155" font-size="11" fill="#8a93a6" text-anchor="middle" font-family="var(--font-body)">กำลังเตรียมด่านให้พร้อม…</text>
+      </svg>
+      <figcaption>ซ้าย = หน้าจอโหลดเดิมของ Roblox (ปิดเองไม่ได้ถ้าไม่เขียนโค้ด) · ขวา = หน้าจอที่เราจะสร้างเอง มีแถบและเปอร์เซ็นต์บอกความคืบหน้า</figcaption>
+    </figure>
+
+    <h3 style="margin-top:1.6rem">โครงสร้างที่ต้องสร้างใน Explorer</h3>
+    <figure>
+      <svg viewBox="0 0 640 230" role="img" aria-label="ผังโครงสร้าง Explorer: ReplicatedFirst มี LoadingScreen ScreenGui ข้างในมี Background ซึ่งมี Bar ที่มี Fill และมี Percent กับ LocalScript">
+        <g font-family="var(--font-mono)" font-size="12.5" fill="var(--ink)">
+          <text x="16" y="26">▾ ReplicatedFirst</text>
+          <text x="34" y="52">▾ LoadingScreen <tspan fill="var(--ink-faint)">(ScreenGui)</tspan></text>
+          <text x="52" y="78">▾ Background <tspan fill="var(--ink-faint)">(Frame)</tspan></text>
+          <text x="70" y="104">▾ Bar <tspan fill="var(--ink-faint)">(Frame)</tspan></text>
+          <text x="88" y="130">Fill <tspan fill="var(--ink-faint)">(Frame)</tspan></text>
+          <text x="70" y="156">Percent <tspan fill="var(--ink-faint)">(TextLabel)</tspan></text>
+          <text x="52" y="182">LocalScript</text>
+        </g>
+        <rect x="30" y="192" width="170" height="26" rx="6" fill="var(--green-wash)" stroke="var(--green)"/>
+        <text x="115" y="209" font-size="11.5" text-anchor="middle" fill="var(--green-ink)" font-family="var(--font-body)">โค้ดของเราอยู่ตรงนี้</text>
+      </svg>
+      <figcaption>สร้างตามลำดับนี้ทีละอัน: ชี้ที่แถวแม่ → กด <span class="ui">➕</span> → เลือกชนิดวัตถุตามในวงเล็บ · ชื่อทุกอันต้องตรงตามนี้เป๊ะ ๆ เพราะสคริปต์จะเรียกชื่อเหล่านี้</figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li><p>ใน Explorer ชี้ที่ <span class="ui">ReplicatedFirst</span> → กด <span class="ui">➕</span> → เลือก <span class="ui">ScreenGui</span> → เปลี่ยนชื่อเป็น <b>LoadingScreen</b></p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ชี้ที่ <span class="ui">LoadingScreen</span> → <span class="ui">➕ ▸ Frame</span> → ตั้งชื่อ <b>Background</b> → ใน Properties ตั้ง <span class="ui">Size</span> = <code>{1,0},{1,0}</code>, <span class="ui">Position</span> = <code>{0,0},{0,0}</code>, <span class="ui">BackgroundColor3</span> เป็นสีเข้ม (เช่น เกือบดำ)</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ชี้ที่ <span class="ui">Background</span> → <span class="ui">➕ ▸ Frame</span> → ตั้งชื่อ <b>Bar</b> (นี่คือ "ราง" ของแถบ) → ตั้ง <span class="ui">Size</span> เป็นแถบยาวบาง ๆ เช่น <code>{0.5,0},{0,24}</code> วางกึ่งกลางจอ → สีเทาเข้ม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ชี้ที่ <span class="ui">Bar</span> → <span class="ui">➕ ▸ Frame</span> → ตั้งชื่อ <b>Fill</b> (ส่วนที่จะ "วิ่ง") → ตั้ง <span class="ui">Size</span> เริ่มต้นเป็น <code>{0,0},{1,0}</code> → เลือกสีสว่างหรือสีธีมเกม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ชี้ที่ <span class="ui">Background</span> → <span class="ui">➕ ▸ TextLabel</span> → ตั้งชื่อ <b>Percent</b> → ลบข้อความตัวอย่าง พิมพ์ <code>0%</code> → ตั้ง <span class="ui">BackgroundTransparency</span> = 1 (โปร่งใส) วางไว้ใต้แถบ</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>ชี้ที่ <span class="ui">LoadingScreen</span> → <span class="ui">➕ ▸ LocalScript</span> → ลบข้อความตัวอย่าง → วางสคริปต์ <b>A8 · Custom Loading Screen</b> จากคลังสคริปต์ท้ายเล่ม</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+      <li><p>กด <kbd>Ctrl</kbd>+<kbd>S</kbd> แล้วกด <span class="ui">Play</span> ทดสอบดู — ถ้าเกมโหลดเร็วเกินจนมองแถบไม่ทัน ให้ลองกด Publish แล้วเข้าเล่นผ่านเว็บจริงแทน จะเห็นแถบวิ่งชัดกว่า</p><label class="done"><input type="checkbox"> ทำแล้ว</label></li>
+    </ol>
+
+    <div class="box try">
+      <span class="h">🧩 ลองเอง</span>
+      <p>1) เปลี่ยนสี <b>Fill</b> ให้เข้ากับธีมเกมของตัวเอง หรือทำให้เป็นไล่สี (Gradient) ด้วย <span class="ui">UIGradient</span><br>
+      2) ใส่ <span class="ui">UICorner</span> ให้ <b>Bar</b> และ <b>Fill</b> เพื่อให้ขอบโค้งมนสวยขึ้น<br>
+      3) เพิ่ม TextLabel อีกอันบอกชื่อเกมหรือคำแนะนำการเล่น เช่น "กด Space เพื่อกระโดด"</p>
+    </div>
+
+    <div class="box watch">
+      <span class="h">⚠️ ระวัง</span>
+      <p>สคริปต์ต้องเป็น <b>LocalScript</b> ไม่ใช่ Script ธรรมดา (เพราะหน้าจอเป็นเรื่องของแต่ละเครื่องผู้เล่น) · ต้องวางไว้ใน <b>ReplicatedFirst</b> เท่านั้น ถ้าวางที่อื่นจะโผล่ช้าเกินไปจนมองไม่ทันตอนโหลด · ถ้าจอค้างที่ 0% ตลอด ให้เช็กว่าพิมพ์ชื่อ Background/Bar/Fill/Percent ตรงกับในสคริปต์ทุกตัวอักษร</p>
+    </div>
+
+    <p><b>สะท้อนความคิด ✍️</b> — หน้าจอโหลดของฉันมีสีธีมว่า ______ · ส่วนที่ยากที่สุดของภารกิจนี้คือ ______</p>
+  </section>
+
   <!-- ================= SCRIPTS ================= -->
   <section id="scripts" class="block">
     <div class="kicker">หน้าอ้างอิง · สคริปต์</div>
@@ -732,17 +820,17 @@
     </div>
 
     <p class="code-title">A1 · Kill Brick — วางไว้ "ข้างในก้อนกับดัก" (ใช้คาบ 4)</p>
-    <pre><code>local trap = script.Parent
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local trap = script.Parent
 
 trap.Touched:Connect(function(hit)
 	local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
 	if humanoid then
 		humanoid.Health = 0
 	end
-end)</code></pre>
+end)</code></pre></div>
 
     <p class="code-title">A2 · Checkpoints — วางใน ServerScriptService (ใช้คาบ 4)</p>
-    <pre><code>local Players = game:GetService("Players")
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local Players = game:GetService("Players")
 local checkpoints = workspace:WaitForChild("Checkpoints")
 
 local function onCharacterAdded(character, player)
@@ -775,10 +863,10 @@ for _, pad in ipairs(checkpoints:GetChildren()) do
 			end
 		end)
 	end
-end</code></pre>
+end</code></pre></div>
 
     <p class="code-title">A3 · Leaderstats (กระดานคะแนน Coins) — วางใน ServerScriptService (ใช้คาบ 6)</p>
-    <pre><code>local Players = game:GetService("Players")
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local Players = game:GetService("Players")
 
 Players.PlayerAdded:Connect(function(player)
 	local stats = Instance.new("Folder")
@@ -789,10 +877,10 @@ Players.PlayerAdded:Connect(function(player)
 	coins.Name = "Coins"
 	coins.Value = 0
 	coins.Parent = stats
-end)</code></pre>
+end)</code></pre></div>
 
     <p class="code-title">A4 · Coin Pickup — วางไว้ "ข้างในเหรียญ" (ใช้คาบ 6)</p>
-    <pre><code>local coin = script.Parent
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local coin = script.Parent
 local Players = game:GetService("Players")
 
 local COIN_VALUE = 1
@@ -810,10 +898,10 @@ coin.Touched:Connect(function(hit)
 		coins.Value = coins.Value + COIN_VALUE
 		coin:Destroy()
 	end
-end)</code></pre>
+end)</code></pre></div>
 
     <p class="code-title">A5 · Disappearing Block (ก้อนหายเมื่อเหยียบ) — วางไว้ "ข้างในก้อน" (ลองเอง คาบ 5)</p>
-    <pre><code>local block = script.Parent
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local block = script.Parent
 local RESET_TIME = 3
 local busy = false
 
@@ -830,18 +918,18 @@ block.Touched:Connect(function(hit)
 	block.Transparency = 0
 	block.CanCollide = true
 	busy = false
-end)</code></pre>
+end)</code></pre></div>
 
     <p class="code-title">A6 · Spinning Coin (เหรียญหมุน) — วางไว้ "ข้างในเหรียญ" (ลองเอง คาบ 6)</p>
-    <pre><code>local RunService = game:GetService("RunService")
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local RunService = game:GetService("RunService")
 local coin = script.Parent
 
 RunService.Heartbeat:Connect(function(deltaTime)
 	coin.CFrame = coin.CFrame * CFrame.Angles(0, math.rad(90) * deltaTime, 0)
-end)</code></pre>
+end)</code></pre></div>
 
     <p class="code-title">A7 · Finish Line (เส้นชัยมีเสียง + บวก 10 แต้ม) — วางไว้ "ข้างในก้อน FINISH" (โบนัส)</p>
-    <pre><code>local finish = script.Parent
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local finish = script.Parent
 local sound = finish:FindFirstChildWhichIsA("Sound")
 local Players = game:GetService("Players")
 local won = {}
@@ -863,7 +951,47 @@ finish.Touched:Connect(function(hit)
 
 	task.wait(3)
 	won[player] = nil
-end)</code></pre>
+end)</code></pre></div>
+
+    <p class="code-title">A8 · Custom Loading Screen — วางเป็น "LocalScript ข้างใน ScreenGui LoadingScreen" ที่ ReplicatedFirst (ภารกิจพิเศษ)</p>
+    <div class="code-block"><button class="copy-btn" type="button" aria-label="คัดลอกโค้ด">📋 คัดลอกโค้ด</button><pre><code>local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local ContentProvider = game:GetService("ContentProvider")
+
+local screenGui = script.Parent
+local fill = screenGui.Background.Bar.Fill
+local percentLabel = screenGui.Background.Percent
+
+-- ปิดหน้าจอโหลดเริ่มต้นของ Roblox เพื่อใช้หน้าจอที่เราออกแบบเองแทน
+ReplicatedFirst:RemoveDefaultLoadingScreen()
+
+local assets = game:GetDescendants()
+local total = #assets
+local loaded = 0
+
+-- โหลดของทีละชิ้น แล้วอัปเดตแถบกับตัวเลข % ทุกครั้งที่โหลดเสร็จ 1 ชิ้น
+for _, asset in ipairs(assets) do
+	task.spawn(function()
+		pcall(function()
+			ContentProvider:PreloadAsync({ asset })
+		end)
+		loaded += 1
+		local percent = math.floor((loaded / total) * 100)
+		fill.Size = UDim2.new(percent / 100, 0, 1, 0)
+		percentLabel.Text = percent .. "%"
+	end)
+end
+
+repeat task.wait() until loaded &gt;= total
+
+-- โหลดครบแล้ว หน่วงนิดหน่อยให้เห็น 100% เต็ม ๆ แล้วค่อย ๆ จางหายไป
+task.wait(0.3)
+for i = 1, 10 do
+	screenGui.Background.BackgroundTransparency += 0.1
+	fill.BackgroundTransparency += 0.1
+	percentLabel.TextTransparency += 0.1
+	task.wait(0.03)
+end
+screenGui:Destroy()</code></pre></div>
 
     <div class="box note">
       <span class="h">💡 อ่านข้อความสีแดง (error) ยังไง</span>
