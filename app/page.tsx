@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./page.module.css";
+import StudentLessonPicker from "./student-lesson-picker";
 
 export default function HomePage() {
   return (
@@ -47,17 +48,7 @@ export default function HomePage() {
             <span className={styles.go}>เปิดคู่มือครู →</span>
           </Link>
 
-          <Link className={styles.card} href="/student">
-            <span className={`${styles.cardTag} ${styles.student}`}>
-              สำหรับนักเรียน
-            </span>
-            <h2>คู่มือนักเรียน</h2>
-            <p>
-              8 ภารกิจทำตามทีละขั้น พร้อมช่องติ๊ก · ภาพประกอบหน้าจอ เครื่องมือ
-              และผังด่าน · กล่อง “ลองเอง” · หน้าสคริปต์ · เกียรติบัตรนักสร้างเกม
-            </p>
-            <span className={styles.go}>เปิดคู่มือนักเรียน →</span>
-          </Link>
+          <StudentLessonPicker />
         </div>
 
         <footer className={styles.foot}>
